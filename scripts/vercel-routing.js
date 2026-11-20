@@ -3,7 +3,8 @@
 // "what does this URL return?" the way Vercel would.
 //
 // It covers only the route kinds this site's build writes: src + headers (+ continue),
-// src + status + Location, src + dest, { handle: 'filesystem' }, and the adapter's catch-all
+// src + status + Location, src + dest, `has` / `missing` host conditions,
+// { handle: 'filesystem' }, and the adapter's catch-all
 // (a 404 for a site with only prerendered pages). Any other kind of route makes it throw, so a
 // change in the adapter's output can't slip past the tests unnoticed.
 //
@@ -16,7 +17,15 @@ import path from 'node:path';
 export const WWW = 'www.consultjct.com';
 export const APEX = 'consultjct.com';
 
-const KNOWN = new Set(['src', 'dest', 'headers', 'status', 'continue', 'handle']);
+const KNOWN = new Set(['src', 'dest', 'headers', 'status', 'continue', 'handle', 'has', 'missing']);
+
+/** A Vercel `has`/`missing` host condition: an exact host, or a regex when it looks like one. */
+const hostMatches = (cond, host) => {
+	if (cond.type !== 'host') throw new Error(`Unsupported condition type ${cond.type}`);
+	return /[\^$()[\]*+?|\\]/.test(cond.value)
+		? new RegExp(`^(?:${cond.value})$`).test(host)
+		: cond.value === host;
+};
 
 export function loadRouter(dir = '.vercel/output') {
 	const config = JSON.parse(fs.readFileSync(path.join(dir, 'config.json'), 'utf8'));
@@ -49,13 +58,15 @@ export function loadRouter(dir = '.vercel/output') {
 		return file.startsWith(staticDir) && fs.existsSync(file) && fs.statSync(file).isFile();
 	};
 
-	/** Routing for a path on the canonical host: { status, location?, headers }. */
-	function routePath(pathname) {
+	/** Routing for a path on a host (default www): { status, location?, headers }. */
+	function routePath(pathname, host = WWW) {
 		const headers = {};
 		let p = pathname;
 		for (const r of before) {
 			const m = p.match(anchored(r.src));
 			if (!m) continue;
+			if (r.has && !r.has.every((c) => hostMatches(c, host))) continue;
+			if (r.missing && r.missing.some((c) => hostMatches(c, host))) continue;
 			for (const [k, v] of Object.entries(r.headers ?? {})) headers[k] = fill(v, m);
 			if (r.status) return { status: r.status, location: headers.Location, headers };
 			if (r.continue) continue;
@@ -65,16 +76,26 @@ export function loadRouter(dir = '.vercel/output') {
 		return served(p) ? { status: 200, headers } : { status: 404, headers };
 	}
 
-	/** One request: { status, location? } for an absolute URL or a path on www. */
+	/** One request: { status, location?, headers } for an absolute URL or a path on www. */
 	function request(url) {
 		const u = new URL(url, `https://${WWW}`);
-		if (u.protocol === 'http:') return { status: 308, location: `https://${u.host}${u.pathname}` };
-		if (u.host === APEX) return { status: 308, location: `https://${WWW}${u.pathname}` };
-		if (u.host !== WWW) throw new Error(`Not this site: ${url}`);
-		const res = routePath(u.pathname);
-		if (res.location) res.location = new URL(res.location, `https://${WWW}`).href;
+		if (u.protocol === 'http:')
+			return { status: 308, location: `https://${u.host}${u.pathname}`, headers: {} };
+		if (u.host === APEX)
+			return { status: 308, location: `https://${WWW}${u.pathname}`, headers: {} };
+		const res = routePath(u.pathname, u.host);
+		if (res.location) res.location = new URL(res.location, `https://${u.host}`).href;
 		return res;
 	}
+
+	/**
+	 * The headers this build's routing adds for a URL on any host, ignoring the domain-level
+	 * redirects. Used to test the noindex rule per host (www, apex, *.vercel.app, previews).
+	 */
+	const headersFor = (url) => {
+		const u = new URL(url);
+		return routePath(u.pathname, u.host).headers;
+	};
 
 	/** Follows redirects (up to 5): { status, hops: [url...], final }. */
 	function follow(url) {
@@ -89,5 +110,5 @@ export function loadRouter(dir = '.vercel/output') {
 		return { status: 'loop', hops, final: current };
 	}
 
-	return { config, request, follow, routePath };
+	return { config, request, follow, routePath, headersFor };
 }
