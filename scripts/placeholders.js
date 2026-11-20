@@ -5,7 +5,7 @@
 // A placeholder in src/ is any of:
 //   - the text "[PLACEHOLDER" (copy, config, the legal markdown),
 //   - a <Placeholder> chip or an <ImageSlot> (src/components/placeholder/).
-// The two component files themselves are not counted.
+// The placeholder component files themselves (SELF below) are not counted.
 //
 // "Production build" means `vite build` without PUBLIC_SHOW_PLACEHOLDERS=true, or any build on
 // Vercel's production environment (VERCEL_ENV=production), even with the flag set.
@@ -16,7 +16,10 @@ const PATTERNS = [/\[PLACEHOLDER/g, /<Placeholder[\s>/]/g, /<ImageSlot[\s>/]/g];
 const EXTENSIONS = /\.(svelte|js|md|svx|html|json)$/;
 const SELF = [
 	'src/components/placeholder/Placeholder.svelte',
-	'src/components/placeholder/ImageSlot.svelte'
+	'src/components/placeholder/ImageSlot.svelte',
+	// Render placeholders only when given one; the placeholder itself lives in config or content.
+	'src/components/placeholder/MissingLink.svelte',
+	'src/components/placeholder/MissingText.svelte'
 ];
 
 /** Every placeholder in the files under `dir`: [{ file, line, text }]. */

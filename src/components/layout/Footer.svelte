@@ -7,6 +7,7 @@
 	import { labels } from '$lib/config/labels';
 	import { site, footerNav, legalNav } from '$lib/config/site';
 	import Wordmark from '$components/brand/Wordmark.svelte';
+	import MissingLink from '$components/placeholder/MissingLink.svelte';
 </script>
 
 <footer class="border-t border-subtle bg-canvas">
@@ -32,11 +33,12 @@
 				class="flex flex-wrap content-start gap-x-7 gap-y-3 text-mk-ui"
 			>
 				{#each footerNav as l (l.label)}
-					<a
+					<!-- LinkedIn: a placeholder until Jon sends the URL (MissingLink; never href="#"). -->
+					<MissingLink
 						href={l.href}
-						rel={l.external ? 'noopener' : undefined}
+						external={l.external}
 						class="rounded text-fg-muted no-underline hover:text-primary active:text-primary"
-						>{l.label}</a
+						>{l.label}</MissingLink
 					>
 				{/each}
 			</nav>

@@ -2,11 +2,12 @@
 // to JCT's reference PNGs).
 //
 //   npm run dev:preview                 (in another terminal; serves http://localhost:35173)
-//   npm run screenshots -- [--base http://localhost:35173] [--set shell] [--only header,home]
+//   npm run screenshots -- [--base http://localhost:35173] [--set shell|pages] [--only header,home]
+//                          [--tag before|after]
 //
 // For every view, width (390 / 1440) and theme, it takes the design's reference image and the
 // built page, and saves one image with the reference on the left and the build on the right:
-//   docs/screenshots/<set>/<view>-<width>-<theme>.jpg
+//   docs/screenshots/<set>/<view>-<width>-<theme>[-<tag>].jpg
 // The references are the full-page PNGs in the design bundle's screens/ folder, which is not in
 // git: set JCT_SCREENS to its path if it isn't ~/Development/JCT/design/jct-download-01/screens.
 // It uses the Chrome installed on this machine (playwright-core, no browser download); set
@@ -27,6 +28,7 @@ const args = Object.fromEntries(
 const BASE = args.base ?? 'http://localhost:35173';
 const SET = args.set ?? 'shell';
 const ONLY = args.only ? String(args.only).split(',') : null;
+const TAG = typeof args.tag === 'string' ? `-${args.tag}` : '';
 const SCREENS =
 	process.env.JCT_SCREENS ?? join(homedir(), 'Development/JCT/design/jct-download-01/screens');
 const COMPONENTS = resolve('design/jct-download-01/components');
@@ -63,7 +65,38 @@ const SETS = {
 			crop: 'full',
 			built: { path: '/no-such-page', pick: 'full' }
 		}
-	]
+	],
+	// Session 3a: the six pages plus Privacy and Terms, full length, each beside its design screen.
+	pages: [
+		'home',
+		'how-i-work',
+		'services',
+		'work',
+		'about',
+		'free-consult',
+		'privacy',
+		'terms'
+	].map((view) => ({
+		view,
+		ref: screen(view),
+		crop: 'full',
+		built: {
+			path: view === 'home' ? '/' : `/${view}`,
+			pick: 'full',
+			// Free Consult: bring the booking block on screen and give Calendly time to draw.
+			before:
+				view === 'free-consult'
+					? async (p) => {
+							await p.locator('section[aria-label]').last().scrollIntoViewIfNeeded();
+							await p
+								.waitForSelector('iframe[src*="calendly.com"]', { timeout: 10000 })
+								.catch(() => {});
+							await p.waitForTimeout(4000);
+							await p.evaluate(() => scrollTo(0, 0));
+						}
+					: undefined
+		}
+	}))
 };
 
 // --- capture -----------------------------------------------------------------------------------
@@ -84,7 +117,19 @@ async function shoot(browser, url, { pick, before }, w, theme) {
 	if (pick === 'full') {
 		const height = await page.evaluate(() => document.documentElement.scrollHeight);
 		await page.setViewportSize({ width: w, height });
-		await page.waitForTimeout(200);
+		// Let lazy images inside the now-visible page load.
+		await page.waitForLoadState('networkidle');
+		await page.evaluate(() =>
+			Promise.race([
+				Promise.all(
+					[...document.images].map((i) =>
+						i.complete ? null : new Promise((r) => i.addEventListener('load', r, { once: true }))
+					)
+				),
+				new Promise((r) => setTimeout(r, 5000))
+			])
+		);
+		await page.waitForTimeout(300);
 		clip = { x: 0, y: 0, width: w, height };
 	} else if (pick === 'menu') {
 		clip = { x: 0, y: 0, width: w, height: 540 };
@@ -142,7 +187,7 @@ for (const item of SETS[SET]) {
 		for (const theme of THEMES) {
 			const { shot, height } = await shoot(browser, BASE + item.built.path, item.built, w, theme);
 			const left = await refImage(item.ref(w, theme), item.crop, w, height);
-			const name = `${item.view}-${w}-${theme}`;
+			const name = `${item.view}-${w}-${theme}${TAG}`;
 			writeFileSync(
 				join(OUT, `${name}.jpg`),
 				await compose(browser, left, shot, `${item.view} · ${w} · ${theme}`)

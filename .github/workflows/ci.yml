@@ -28,9 +28,14 @@ jobs:
       - name: Lint and formatting
         run: npm run lint
 
-      # svelte-check, the production-placeholder check and the label-config test
+      # svelte-check and the label-config test
       - name: Check
-        run: npm run check
+        run: npm run check:code
+
+      # The production-placeholder check: a warning on pull requests, a failure on main.
+      # (Any production build, e.g. Vercel's, fails on its own while a placeholder is left.)
+      - name: Placeholders
+        run: node scripts/check-placeholders.mjs ${{ github.event_name == 'pull_request' && '--warn' || '' }}
 
       - name: Unit tests
         run: npm run test:unit

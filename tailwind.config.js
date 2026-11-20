@@ -132,6 +132,11 @@ export default {
 				strong: token('border-strong')
 			},
 			divideColor: { DEFAULT: token('border'), subtle: token('border') },
+			// Rules drawn as elements (stage rail, hero float-card divider).
+			backgroundColor: {
+				border: token('border'),
+				'border-strong': token('border-strong')
+			},
 			ringColor: {
 				border: token('border'),
 				'border-strong': token('border-strong'),

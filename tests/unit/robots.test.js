@@ -1,5 +1,7 @@
-// Search-engine rule: non-production deploys send X-Robots-Tag: noindex; production pages carry
-// no noindex tag and get no noindex header. `npm run test:unit`.
+// Search-engine rule (Session 3a, item 1): only https://www.consultjct.com is indexable. Every
+// other host (previews, *.vercel.app including production, the apex) gets X-Robots-Tag: noindex
+// from Vercel's routing, by host, in every build. No page carries a noindex tag.
+// The per-host behaviour on the real build is tested in tests/seo/robots.test.js.
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
 import {
@@ -12,7 +14,7 @@ import {
 	writeFileSync
 } from 'node:fs';
 import { join } from 'node:path';
-import { NOINDEX_ROUTE, vercelOutput, withRobots } from '../../scripts/vercel-output.js';
+import { INDEXABLE_HOST, NOINDEX_ROUTE, vercelOutput } from '../../scripts/vercel-output.js';
 
 const sample = {
 	version: 3,
@@ -20,7 +22,7 @@ const sample = {
 };
 
 /** Runs the wrapped adapter against a fake Vercel adapter; returns the config it leaves behind. */
-async function adapt(vercelEnv) {
+async function adapt(env) {
 	// Inside the repo's gitignored build folder, removed afterwards.
 	mkdirSync('.svelte-kit', { recursive: true });
 	const dir = mkdtempSync(join('.svelte-kit', 'test-robots-'));
@@ -31,40 +33,41 @@ async function adapt(vercelEnv) {
 			writeFileSync(join(dir, 'config.json'), JSON.stringify(sample));
 		}
 	};
+	const saved = process.env.VERCEL_ENV;
 	try {
-		await vercelOutput(fake, { vercelEnv, dir }).adapt({ log: { minor() {} } });
+		if (env === undefined) delete process.env.VERCEL_ENV;
+		else process.env.VERCEL_ENV = env;
+		await vercelOutput(fake, { dir }).adapt({ log: { minor() {} } });
 		return JSON.parse(readFileSync(join(dir, 'config.json'), 'utf8'));
 	} finally {
+		if (saved === undefined) delete process.env.VERCEL_ENV;
+		else process.env.VERCEL_ENV = saved;
 		rmSync(dir, { recursive: true, force: true });
 	}
 }
 
-const hasNoindexHeader = (config) =>
-	config.routes.some((r) => /noindex/i.test(r.headers?.['X-Robots-Tag'] ?? ''));
-
 describe('robots', () => {
-	for (const env of ['preview', 'development', undefined]) {
-		test(`non-production (${env ?? 'local build'}): every response sends X-Robots-Tag: noindex`, async () => {
+	test('the rule: noindex on every path unless the host is www.consultjct.com', () => {
+		assert.equal(INDEXABLE_HOST, 'www.consultjct.com');
+		assert.deepEqual(NOINDEX_ROUTE, {
+			src: '/(.*)',
+			missing: [{ type: 'host', value: 'www.consultjct.com' }],
+			headers: { 'X-Robots-Tag': 'noindex' },
+			continue: true
+		});
+	});
+
+	// The build environment no longer matters: production deploys to *.vercel.app too.
+	for (const env of ['production', 'preview', 'development', undefined]) {
+		test(`VERCEL_ENV=${env ?? '(unset)'}: the same host rule, first, exactly once`, async () => {
 			const config = await adapt(env);
 			assert.deepEqual(config.routes[0], NOINDEX_ROUTE, 'noindex rule must come first');
-			assert.equal(config.routes[0].src, '/(.*)');
-			assert.equal(config.routes[0].continue, true);
 			assert.deepEqual(config.routes.slice(-sample.routes.length), sample.routes);
-			assert.equal(
-				config.routes.filter((r) => r === NOINDEX_ROUTE || r.headers?.['X-Robots-Tag']).length,
-				1
-			);
+			assert.equal(config.routes.filter((r) => r.headers?.['X-Robots-Tag']).length, 1);
 		});
 	}
 
-	test('production: no noindex header', async () => {
-		const config = await adapt('production');
-		assert.deepEqual(config.routes.slice(-sample.routes.length), sample.routes);
-		assert.equal(hasNoindexHeader(config), false);
-		assert.deepEqual(withRobots(sample, 'production'), sample);
-	});
-
-	test('production: no page carries a noindex tag', () => {
+	test('no page carries a noindex tag', () => {
 		const hits = [];
 		const walk = (d) => {
 			for (const name of readdirSync(d)) {

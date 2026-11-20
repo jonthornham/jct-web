@@ -212,10 +212,11 @@
 	}
 
 	/* Legal pages (section-layouts.md › Legal pages): the mdsvex text in one 704px column.
-	   H2s at mk-title with 16px extra top margin, paragraphs mk-body, gap 20px, bold lead-ins in
-	   fg 600, inline links in link. */
+	   H2s at mk-title with 16px extra top margin, paragraphs mk-body in fg (as the screens draw
+	   them), gap 20px, bold lead-ins in fg 600, inline links in link. "Last updated" is mk-ui
+	   fg-muted (LegalPage.svelte). */
 	.prose-legal {
-		@apply flex max-w-[44rem] flex-col gap-5 text-mk-body text-fg-muted;
+		@apply flex max-w-[44rem] flex-col gap-5 text-mk-body text-fg;
 	}
 	.prose-legal > :is(p, ul, ol) {
 		@apply m-0 text-pretty;
@@ -240,5 +241,12 @@
 	}
 	.prose-legal a {
 		@apply text-link underline underline-offset-4;
+	}
+
+	/* Inline links in running text (links.md › Inline link): link colour, plus a soft underline
+	   so they don't rely on colour alone (WCAG 1.4.1; Lighthouse "link-in-text-block"). The
+	   design draws them without one; hover makes the underline full strength, active is fg. */
+	.inline-link {
+		@apply text-link underline decoration-link/40 decoration-1 underline-offset-4 hover:decoration-link active:text-fg;
 	}
 }

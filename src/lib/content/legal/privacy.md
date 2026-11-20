@@ -1,14 +1,15 @@
 <!--
 	design/jct-download-01/legal/privacy.md, word for word, without its H1 and "Last updated" line
-	(the page shows those from config). The contact email comes from config (labels.contact.email).
+	(the page shows those from config). The contact email and phone number come from config (labels.contact.email, site.phone); the phone is in Geist Mono (checklist: fixed-width digits).
 -->
 <script>
 	import { labels } from '$lib/config/labels';
+	import { site } from '$lib/config/site';
 </script>
 
 ## Who we are
 
-consultjct.com is run by JCT Consulting, Jon Thornham's product and operations practice in Las Vegas, Nevada. In this policy, "I" and "we" mean JCT Consulting. Questions about your information go to <a href="mailto:{labels.contact.email}">{labels.contact.email}</a> or 702-518-2998.
+consultjct.com is run by JCT Consulting, Jon Thornham's product and operations practice in Las Vegas, Nevada. In this policy, "I" and "we" mean JCT Consulting. Questions about your information go to <a href="mailto:{labels.contact.email}">{labels.contact.email}</a> or <span class="font-mono">{site.phone}</span>.
 
 ## What we collect
 

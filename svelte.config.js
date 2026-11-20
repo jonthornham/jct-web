@@ -13,8 +13,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md', '.svx'],
+	// Straight quotes and apostrophes, as in the legal text and every other page; "--" still
+	// becomes an en dash.
 	smartypants: {
-		dashes: 'oldschool'
+		dashes: 'oldschool',
+		quotes: false,
+		backticks: false,
+		ellipses: false
 	},
 	remarkPlugins: [remarkGfm],
 	rehypePlugins: [rehypeSlug]

@@ -22,7 +22,10 @@ module.exports = {
 		},
 		assert: {
 			assertions: {
-				'categories:seo': ['error', { minScore: 1 }]
+				// Session 3a: SEO and Accessibility 100 on every page, Performance at least 90.
+				'categories:seo': ['error', { minScore: 1 }],
+				'categories:accessibility': ['error', { minScore: 1 }],
+				'categories:performance': ['error', { minScore: 0.9 }]
 			}
 		},
 		upload: {
