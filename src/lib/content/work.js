@@ -1,6 +1,6 @@
 // Work (copy-map › Work `/work`). Headings, chips and results are word for word from the copy
-// map; the Starting point / What I did / Why it's here text is transcribed from the design's
-// screens (the copy map names it, from Jon's doc, without quoting it).
+// map; the Starting point / What I did / Why it's here text was transcribed from the design's
+// screens and checked word for word against Jon's copy doc (Session 3a fixes).
 export const work = {
 	eyebrow: 'Work',
 	h1: 'Case studies',

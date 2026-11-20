@@ -14,20 +14,26 @@ Done:
 - **Placeholders in CI:** a warning on PRs and a failure on `main`. Any production build (Vercel's included) still fails while one is left.
 - **Pages:** Home, How I Work, Services, Work, About and Free Consult built in full from the screens and specs. Privacy and Terms got the page-end panel.
   - Copy is in `src/lib/content/` and labels in config.
-  - Text the copy map names without quoting (Sprint weeks, case studies, About body, FAQ answer 1) is transcribed from the screens.
+  - Text the copy map names without quoting was transcribed from the screens: the Sprint weeks, the "You leave with…" line, Not included, the three case studies, the three About paragraphs and FAQ answer 1. **Checked word for word against Jon's copy doc by the manager (3a fixes): all match.**
+  - FAQ answers 2–5 are from Jon's copy doc (Services & Pricing › FAQ).
+- **Fixed-width digits:** the phone number in Privacy and Terms is in Geist Mono.
 - **Calendly:** the inline widget on `/free-consult` only, loaded when the block nears the screen, with a skeleton until it shows. It uses `site.calendly` = Jon's account page for now.
 - **Missing links:** `site.linkedin`, `site.stripe.advisory` and `site.stripe.sprintDeposit` are placeholders, never `href="#"`.
 - **Checks:** Lighthouse SEO 100 and Accessibility 100 on every page, Performance ≥ 90 (enforced in CI).
 - **Screenshots:** before/after, design beside build, in `docs/screenshots/pages/`.
 
-Placeholders left (12 lines; production builds fail until each is replaced or its slot removed):
+Placeholders left (8 lines; production builds fail until each is replaced or its slot removed):
 - LinkedIn URL; Stripe payment links for advisory hours and the Sprint deposit.
-- FAQ answers 2–5 (not in the design bundle).
 - FLO Cycling logo (single-colour SVG); other client logos, with permission.
 - Photos: prototyping or 3D-print (How I Work); Seltza CAD render and sample or factory photo (Work); GSE marketplace screenshot (Work).
 
+Accepted by Jon (3a review):
+- **Calendly fallback:** a plain link to `site.calendly` when the widget fails or JavaScript is off, until 3b's intake form replaces it.
+- **Inline links** keep the soft underline (needed for Accessibility 100).
+- **Free Consult Best practices = 79** in Lighthouse, from Calendly's third-party cookies. Accepted; no threshold is set for Best practices.
+
 Waiting on Jon:
-- The 15-minute Calendly event link (the account page shows a "30 Minute Meeting" today).
+- The 15-minute Calendly event link: Jon is making the event and sends the link for 3b (the account page shows a "30 Minute Meeting" today).
 - The items above, or a decision to drop a slot at launch (HANDOFF "Still open" 4).
 - Note: Vercel production deploys fail while placeholders remain (by design).
 

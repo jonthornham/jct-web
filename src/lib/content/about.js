@@ -1,5 +1,6 @@
 // About (copy-map › About `/about`). H1, list and links word for word from the copy map; the three
-// body paragraphs are transcribed from the design's screens ("the three paragraphs, word for word").
+// body paragraphs were transcribed from the design's screens and checked
+// word for word against Jon's copy doc (Session 3a fixes).
 export const about = {
 	eyebrow: 'About',
 	h1: "I'm Jon. I get physical products made.",

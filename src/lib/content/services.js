@@ -1,5 +1,7 @@
 // Services & Pricing (copy-map › Services & Pricing `/services`), word for word. Text the copy
-// map only names ("the five Q&As", the Sprint weeks) is transcribed from the design's screens.
+// map only names (the Sprint weeks, the first FAQ answer) was transcribed from the design's screens
+// and checked word for word against Jon's copy doc (Session 3a fixes). FAQ answers 2–5 are from
+// Jon's copy doc (Services & Pricing › FAQ).
 export const services = {
 	eyebrow: 'Services & Pricing',
 	h1: 'Senior product and operations help, sized to where you are.',
@@ -95,8 +97,7 @@ export const services = {
 		lead: 'Not included:',
 		body: "hands-on hardware design, website or app builds and firmware are quoted separately at $250/hr, or I'll bring in a specialist. Tooling, samples and third-party costs are paid by the client."
 	},
-	// Only the first answer is drawn in the design (the first item is open); the other four
-	// answers aren't in the design bundle. They stay placeholders until Jon sends them.
+	// Answer 1 is drawn in the design; answers 2–5 are from Jon's copy doc (Services & Pricing › FAQ).
 	faq: [
 		{
 			q: 'Are you remote?',
@@ -104,19 +105,19 @@ export const services = {
 		},
 		{
 			q: 'Do you handle websites, apps and firmware?',
-			a: "[PLACEHOLDER: Needs this answer from Jon's copy doc]"
+			a: 'Yes. My focus is companies that sell physical products, but I build websites and apps, handle some firmware, and bring in specialists for the rest.'
 		},
 		{
 			q: 'Is there a minimum commitment?',
-			a: "[PLACEHOLDER: Needs this answer from Jon's copy doc]"
+			a: 'No. Retainers are month to month.'
 		},
 		{
 			q: 'Can we start small?',
-			a: "[PLACEHOLDER: Needs this answer from Jon's copy doc]"
+			a: 'Yes. Most clients start with a free 15-minute consult, then advisory hours or the Sprint.'
 		},
 		{
 			q: 'What if we need a full-time hire later?',
-			a: "[PLACEHOLDER: Needs this answer from Jon's copy doc]"
+			a: "Good. I'll help you write the role and interview for it."
 		}
 	]
 };
