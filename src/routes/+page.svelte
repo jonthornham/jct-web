@@ -9,10 +9,6 @@
 	const home = pages.home;
 </script>
 
-<svelte:head>
-	<title>{home.title}</title>
-</svelte:head>
-
 <!-- The hero's 2-up grid (6fr / 5fr), so the H1 wraps as it will on the full page. -->
 <Container
 	class="grid gap-[clamp(32px,5vw,72px)] py-mk-section lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]"

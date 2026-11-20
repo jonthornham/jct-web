@@ -12,7 +12,7 @@ import {
 	writeFileSync
 } from 'node:fs';
 import { join } from 'node:path';
-import { NOINDEX_ROUTE, robotsAdapter, withRobots } from '../../scripts/robots.js';
+import { NOINDEX_ROUTE, vercelOutput, withRobots } from '../../scripts/vercel-output.js';
 
 const sample = {
 	version: 3,
@@ -32,7 +32,7 @@ async function adapt(vercelEnv) {
 		}
 	};
 	try {
-		await robotsAdapter(fake, { vercelEnv, dir }).adapt({ log: { minor() {} } });
+		await vercelOutput(fake, { vercelEnv, dir }).adapt({ log: { minor() {} } });
 		return JSON.parse(readFileSync(join(dir, 'config.json'), 'utf8'));
 	} finally {
 		rmSync(dir, { recursive: true, force: true });
@@ -49,13 +49,17 @@ describe('robots', () => {
 			assert.deepEqual(config.routes[0], NOINDEX_ROUTE, 'noindex rule must come first');
 			assert.equal(config.routes[0].src, '/(.*)');
 			assert.equal(config.routes[0].continue, true);
-			assert.deepEqual(config.routes.slice(1), sample.routes);
+			assert.deepEqual(config.routes.slice(-sample.routes.length), sample.routes);
+			assert.equal(
+				config.routes.filter((r) => r === NOINDEX_ROUTE || r.headers?.['X-Robots-Tag']).length,
+				1
+			);
 		});
 	}
 
 	test('production: no noindex header', async () => {
 		const config = await adapt('production');
-		assert.deepEqual(config, sample);
+		assert.deepEqual(config.routes.slice(-sample.routes.length), sample.routes);
 		assert.equal(hasNoindexHeader(config), false);
 		assert.deepEqual(withRobots(sample, 'production'), sample);
 	});

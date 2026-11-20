@@ -7,6 +7,41 @@
 - **Analytics on the old site: none.** Search Console is the only traffic data.
 - Old site: **Email/Password sign-in is OFF** in `jctconsulting-a2ed3` (done by Jon in the console). Nobody can sign in or register on the old site. The new site has no login.
 
+## Session 2 (2026-11-20): scaffold, shell, SEO, redirects, CI. PR #3 (`feat/scaffold`)
+
+Done (2a):
+- SvelteKit site scaffolded from lamp-web: tokens, Geist fonts, header with CTA, phone menu, theme toggle, footer.
+- 8 prerendered page stubs (H1 only) and the 404. Privacy and Terms in full.
+- Every UI label in `src/lib/config/labels.js`, with a test.
+- Placeholder rule: placeholders show only with `PUBLIC_SHOW_PLACEHOLDERS=true`, and a production build with any left fails.
+
+Done (2b preface):
+- Contact email `jon@consultjct.com` on Privacy, Terms and the footer. No placeholders are left, so a normal production build passes.
+- Vercel project on Node.js 24.x (set by Jon).
+- Search Console Domain property verified Nov 20. There is no earlier history.
+
+Done (2b):
+- **SEO registry** (`src/lib/seo/registry.js`) for every page: title, description, canonical on www, OG image and JSON-LD.
+  - JSON-LD: ProfessionalService on /, Organization and Person on /about, and a WebPage node on every page.
+  - `robots.txt` and `sitemap.xml` (8 pages).
+- **Redirects** (Jon approved the map Nov 20): `src/lib/seo/redirects.js`, 22 rules, all 301, one hop.
+  - A trailing slash goes straight to the final page.
+  - `docs/SEO_INVENTORY.csv` is filled for every row, and `docs/REDIRECT_MAP.md` is marked approved.
+- **Search engines:** previews and any other non-production deploys send `X-Robots-Tag: noindex`. Production sends no noindex.
+- **Tests:**
+  - `npm run test:seo`: registry, built head tags, 95 redirect checks, and the link check.
+  - `npm run check`: svelte-check, the placeholder check and the label test.
+- **CI** on every PR: lint, check, unit tests, test:seo, link check, and Lighthouse (SEO 100 on all 8 pages).
+
+Waiting on Jon (Vercel, new project):
+- Environment variable `PUBLIC_SHOW_PLACEHOLDERS=true` for **Preview only**.
+- At launch, domains on the new project:
+  - `www.consultjct.com` is the primary domain.
+  - `consultjct.com` redirects to `www.consultjct.com` (permanent).
+  - Vercel does http → https on its own.
+  - Both domains move from the old project in one step.
+- Merge PR #3 when happy.
+
 ## Session 1b (2026-11-20): merge docs, tighten lockdown, stop the contact-form relay
 
 Done:
@@ -20,8 +55,8 @@ Waiting on Jon:
   1. Rules: `firebase deploy --only firestore:rules --project jctconsulting-a2ed3`
   2. Function: `firebase deploy --only functions:email.sendEmail --project jctconsulting-a2ed3`
 - The honeypot field goes live when Vercel redeploys the old repo's `main`. The function deploy alone already stops the relay.
-- The 6 new page names → fill `new_url` in `docs/SEO_INVENTORY.csv` and `docs/REDIRECT_MAP.md`
-- Search Console export → `docs/search-console/`
+- ~~The 6 new page names → fill `new_url`~~ Done in Session 2b.
+- ~~Search Console export~~ No history before Nov 20 (see `docs/search-console/README.md`).
 
 ## Session 1 (2026-11-20): SEO inventory + old-site lockdown
 - `docs/OLD_SITE_INVENTORY.md`, `docs/SEO_INVENTORY.csv` (38 rows), `docs/REDIRECT_MAP.md`

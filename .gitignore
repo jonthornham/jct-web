@@ -21,3 +21,4 @@ ui-debug.log
 # Design bundles: the extracted handoff is committed, the full-page screens and the zip are not.
 design/**/*.zip
 design/**/screens/
+.lighthouseci

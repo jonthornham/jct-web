@@ -9,14 +9,17 @@
 		"build": "svelte-kit sync && vite build",
 		"build:preview": "PUBLIC_SHOW_PLACEHOLDERS=true npm run build",
 		"preview": "vite preview --port 34173 --strictPort",
-		"check": "svelte-kit sync && svelte-check && node scripts/check-placeholders.mjs",
+		"check": "svelte-kit sync && svelte-check && node scripts/check-placeholders.mjs && node --test tests/unit/labels.test.js",
 		"check:placeholders": "node scripts/check-placeholders.mjs",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:unit": "node --test 'tests/unit/*.test.js'",
 		"images": "node scripts/images.mjs",
 		"screenshots": "node scripts/screenshots.mjs",
-		"emulators": "firebase emulators:start --only firestore --project demo-jct"
+		"emulators": "firebase emulators:start --only firestore --project demo-jct",
+		"test:seo": "PUBLIC_SHOW_PLACEHOLDERS=true vite build && node --test 'tests/seo/*.test.js' && node scripts/check-links.mjs",
+		"check:links": "node scripts/check-links.mjs",
+		"lighthouse": "npx --yes @lhci/cli@0.15.1 autorun"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-vercel": "^5.5.1",

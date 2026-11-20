@@ -10,10 +10,6 @@
 	let { page, children } = $props();
 </script>
 
-<svelte:head>
-	<title>{page.title}</title>
-</svelte:head>
-
 <PageHeader eyebrow={page.eyebrow} h1={page.h1} />
 <Container class="pb-mk-section pt-10">
 	<div class="prose-legal">

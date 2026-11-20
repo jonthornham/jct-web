@@ -1,6 +1,6 @@
 // svelte.config.js (from lamp-web)
 import vercel from '@sveltejs/adapter-vercel';
-import { robotsAdapter } from './scripts/robots.js';
+import { vercelOutput } from './scripts/vercel-output.js';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { mdsvex } from 'mdsvex';
 import rehypeSlug from 'rehype-slug';
@@ -25,8 +25,9 @@ const config = {
 	extensions: ['.svelte', '.md', '.svx'],
 	preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
 	kit: {
-		// robotsAdapter: non-production deploys send X-Robots-Tag: noindex (scripts/robots.js).
-		adapter: robotsAdapter(
+		// vercelOutput adds the old-URL redirects, the trailing-slash rule and, outside
+		// production, X-Robots-Tag: noindex (scripts/vercel-output.js).
+		adapter: vercelOutput(
 			vercel({
 				// Node 24, matching "engines.node" in package.json and .nvmrc. Set explicitly because
 				// this adapter version refuses to infer a runtime from a local Node newer than 22.

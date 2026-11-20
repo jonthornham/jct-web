@@ -16,6 +16,24 @@ The old site is SvelteKit on **Vercel**, canonical host **www.consultjct.com**. 
 
 **New site on Vercel:** Jon set the new Vercel project's Node.js version to **24.x** (Settings → Build and Deployment, Nov 20). It matches `engines`, `.nvmrc` and the adapter's `runtime: 'nodejs24.x'`. Preview deploys have `PUBLIC_SHOW_PLACEHOLDERS=true` (Preview only, never Production).
 
+## Scripts
+| Command | What it does |
+|---|---|
+| `npm run dev` / `dev:preview` | Dev server on 35173 (`dev:preview` shows placeholders) |
+| `npm run build` / `build:preview` | Production build (fails on any placeholder) / preview build |
+| `npm run preview` | Serve the last build on 34173 |
+| `npm run lint` | Prettier + ESLint |
+| `npm run check` | svelte-check, production-placeholder check, label-config test |
+| `npm run test:unit` | Unit tests (`tests/unit`) |
+| `npm run test:seo` | Builds, then the SEO registry, built head tags, every old URL in `docs/SEO_INVENTORY.csv` (200 or one permanent redirect), and the link check |
+| `npm run check:links` | Internal link check on the last build |
+| `npm run lighthouse` | Lighthouse on all 8 pages of the last build; SEO must be 100 |
+| `npm run images` / `screenshots` | Image pipeline / design-vs-build screenshots |
+
+CI (`.github/workflows/ci.yml`) runs lint, check, unit, test:seo, the link check and Lighthouse on every PR.
+
+SEO lives in `src/lib/seo/` (`registry.js` for head tags, sitemap and robots.txt; `redirects.js` for old URLs). `scripts/vercel-output.js` writes the redirects and the preview-only `X-Robots-Tag: noindex` into Vercel's routing at build time.
+
 ## Safety rules (always)
 - Branches and PRs only. Never commit to `main` directly.
 - Merge only on Jon's word: `gh pr merge N --merge --match-head-commit <head>`. Never `--force`.
