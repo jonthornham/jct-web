@@ -1,0 +1,28 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/.vercel
+/package
+.env
+.env.*
+!.env.example
+
+# Ignore files for PNPM, NPM and YARN
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Design handoff, kept as Design delivered it.
+design/
+
+# Local Claude Code settings, not part of the app.
+.claude/
+
+# Session docs (Session 1), kept as written.
+docs/
+
+# Session docs at the root, kept as written.
+CLAUDE.md
+README.md
+STATUS.md

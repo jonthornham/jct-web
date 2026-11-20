@@ -1,0 +1,56 @@
+# Runs on every pull request (and on main after a merge). No secrets, no deploys: it builds and
+# checks the site on GitHub's machine only.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint and formatting
+        run: npm run lint
+
+      # svelte-check, the production-placeholder check and the label-config test
+      - name: Check
+        run: npm run check
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      # Builds the site, then: SEO registry, built head tags, every old URL (200 or one
+      # permanent redirect), and the internal link check.
+      - name: SEO and redirects
+        run: npm run test:seo
+
+      - name: Internal link check
+        run: npm run check:links
+
+      # Serves that build with `vite preview` and audits all 8 pages. SEO must be 100.
+      - name: Lighthouse
+        run: npx --yes @lhci/cli@0.15.1 autorun
+
+      - name: Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse
+          path: .lighthouseci/reports
+          if-no-files-found: ignore
