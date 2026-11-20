@@ -2,17 +2,47 @@
 	"firestore": {
 		"rules": "firestore.rules"
 	},
+	"functions": [
+		{
+			"source": "functions",
+			"codebase": "default",
+			"runtime": "nodejs24",
+			"ignore": ["node_modules", ".git", "test", "*.local", "firebase-debug.log"]
+		}
+	],
 	"emulators": {
 		"singleProjectMode": true,
-		"auth": { "port": 39399 },
-		"functions": { "port": 35101 },
-		"firestore": { "port": 38180, "websocketPort": 39150 },
-		"storage": { "port": 39299 },
-		"eventarc": { "port": 39499 },
-		"tasks": { "port": 39599 },
-		"hub": { "port": 34410 },
-		"logging": { "port": 34510 },
-		"ui": { "enabled": true, "port": 34010 },
-		"hosting": { "port": 35000 }
+		"auth": {
+			"port": 39399
+		},
+		"functions": {
+			"port": 35101
+		},
+		"firestore": {
+			"port": 38180,
+			"websocketPort": 39160
+		},
+		"storage": {
+			"port": 39299
+		},
+		"eventarc": {
+			"port": 39499
+		},
+		"tasks": {
+			"port": 39599
+		},
+		"hub": {
+			"port": 34410
+		},
+		"logging": {
+			"port": 34510
+		},
+		"ui": {
+			"enabled": true,
+			"port": 34010
+		},
+		"hosting": {
+			"port": 35000
+		}
 	}
 }

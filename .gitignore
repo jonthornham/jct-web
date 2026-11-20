@@ -22,3 +22,10 @@ ui-debug.log
 design/**/*.zip
 design/**/screens/
 .lighthouseci
+
+# Cloud Functions: local emulator secrets (stand-ins only) and installed packages
+functions/.secret.local
+functions/node_modules
+firebase-debug.log
+database-debug.log
+pubsub-debug.log

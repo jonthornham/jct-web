@@ -18,14 +18,16 @@ module.exports = {
 			startServerCommand: 'npm run preview',
 			startServerReadyPattern: 'localhost:34173',
 			url: pages.map((p) => `http://localhost:34173${p}`),
-			numberOfRuns: 1
+			// Three loads per page; the assertions use the median, so one slow load on GitHub's
+			// machine doesn't fail the run (Session 3b).
+			numberOfRuns: 3
 		},
 		assert: {
 			assertions: {
 				// Session 3a: SEO and Accessibility 100 on every page, Performance at least 90.
-				'categories:seo': ['error', { minScore: 1 }],
-				'categories:accessibility': ['error', { minScore: 1 }],
-				'categories:performance': ['error', { minScore: 0.9 }]
+				'categories:seo': ['error', { minScore: 1, aggregationMethod: 'median' }],
+				'categories:accessibility': ['error', { minScore: 1, aggregationMethod: 'median' }],
+				'categories:performance': ['error', { minScore: 0.9, aggregationMethod: 'median' }]
 			}
 		},
 		upload: {

@@ -195,6 +195,11 @@
 	:focus-visible {
 		@apply outline outline-2 outline-offset-2 outline-focus;
 	}
+	/* No-JavaScript fallbacks (Booking.svelte): src/app.html adds class "js" to <html>. */
+	html.js .nojs-only,
+	html:not(.js) .js-only {
+		display: none;
+	}
 	/* Prices, weeks, years, step numbers and the phone number: Geist Mono, tabular figures. */
 	.font-mono {
 		font-variant-numeric: tabular-nums;

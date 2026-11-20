@@ -16,13 +16,17 @@
 		"test:unit": "node --test 'tests/unit/*.test.js'",
 		"images": "node scripts/images.mjs",
 		"screenshots": "node scripts/screenshots.mjs",
-		"emulators": "firebase emulators:start --only firestore --project demo-jct",
+		"emulators": "node scripts/emulator-secrets.mjs && firebase emulators:start --only firestore,functions --project demo-jct",
 		"test:seo": "PUBLIC_SHOW_PLACEHOLDERS=true vite build && node --test 'tests/seo/*.test.js' && node scripts/check-links.mjs",
 		"check:links": "node scripts/check-links.mjs",
 		"lighthouse": "npx --yes @lhci/cli@0.15.1 autorun",
-		"check:code": "svelte-kit sync && svelte-check && node --test tests/unit/labels.test.js"
+		"check:code": "svelte-kit sync && svelte-check && node --test tests/unit/labels.test.js",
+		"test:rules": "firebase emulators:exec --only firestore --project demo-jct \"node --test 'tests/rules/*.test.js'\"",
+		"test:functions": "npm test --prefix functions",
+		"test:emulators": "node scripts/emulator-secrets.mjs && firebase emulators:exec --only firestore,functions --project demo-jct \"node --test 'tests/emulator/*.test.js'\""
 	},
 	"devDependencies": {
+		"@firebase/rules-unit-testing": "^6.0.0",
 		"@sveltejs/adapter-vercel": "^5.5.1",
 		"@sveltejs/kit": "^2.15.1",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
@@ -47,7 +51,8 @@
 	},
 	"dependencies": {
 		"@tailwindcss/forms": "^0.5.11",
-		"bits-ui": "^2.15.5"
+		"bits-ui": "^2.15.5",
+		"firebase": "^13.4.0"
 	},
 	"engines": {
 		"node": ">=24 <25"

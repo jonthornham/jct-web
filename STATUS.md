@@ -7,6 +7,39 @@
 - **Analytics on the old site: none.** Search Console is the only traffic data.
 - Old site: **Email/Password sign-in is OFF** in `jctconsulting-a2ed3` (done by Jon in the console). Nobody can sign in or register on the old site. The new site has no login.
 
+## Session 3b part 1 (2026-11-20): intake form, email function, App Check. Branch `feat/intake`
+
+Done:
+- **Intake form** on /free-consult (components/intake-form.md), all five states: empty, errors, sending, sent, send error. It replaces Calendly when there's no booking URL, Calendly hasn't shown after 8s, or JavaScript is off (then it submits through the visitor's email app to jon@consultjct.com).
+- **Bots:** a hidden honeypot field and a 3-second time-on-page check. A bot sees the success card; nothing is written.
+- **Save first:** the browser writes one document to `consults`. `firestore.rules` allows only that create: exact fields, length limits, the server's timestamp, one of the five stages, an optional https:// link. No read, update or delete; everything else denied.
+- **Then email:** `functions/` `emailConsult` (2nd gen, Firestore onCreate, **Node.js 24**, the newest Cloud Functions runtime). One Mailjet email to jon@consultjct.com, Reply-To the visitor; never to the visitor. Sets `emailedAt`, or logs and sets `emailError`. No retries. In the emulator it logs the email and never calls Mailjet.
+- **App Check** (reCAPTCHA Enterprise) starts when `VITE_APPCHECK_SITE_KEY` is set; debug token in the emulators. Enforcement stays off.
+- **Firebase loads only on /free-consult,** and only when the form is on screen.
+- **Lighthouse:** 3 loads per page, median; same thresholds.
+- **Screenshots:** the five states beside the design, 390/1440, light/dark: `docs/screenshots/intake/`.
+- **Ports:** JCT's Firestore websocket moved 39150 → 39160 (Wingbeat's emulator holds 39150).
+
+Placeholders left (9 lines): the 8 from 3a, plus the error message for a link that can't be made into a web address (`labels.form.errors.link`, not in the copy map).
+
+### For docs/LAUNCH.md (part 2): App Check, exact console steps
+1. Google Cloud console, project **jct-web-d8780** → Security → **reCAPTCHA** → enable the reCAPTCHA Enterprise API if asked → **Create key**: type *Website*, domains `www.consultjct.com` and `consultjct.com` (add the Vercel preview domain only if previews should pass App Check) → no "checkbox challenge" → Create. Copy the **key ID**.
+2. Firebase console → **App Check** → **Apps** → the web app → **reCAPTCHA Enterprise** → paste the key ID → keep the token time to live at 1 hour → **Save**.
+3. Vercel → jct-web → Settings → Environment Variables → `VITE_APPCHECK_SITE_KEY` = the key ID (Production; Preview too if step 1 added the preview domain) → redeploy.
+4. Leave enforcement **off**. Firebase console → App Check → **APIs** → **Cloud Firestore** shows the share of verified requests.
+5. After launch, once real traffic shows as verified (close to 100% for about a week): App Check → APIs → Cloud Firestore → **Enforce** → Confirm. Unverified requests are then refused.
+
+### Other launch steps (order, for LAUNCH.md)
+1. Firestore database in jct-web-d8780 exists; its location must suit the function region (`us-central1` in `functions/index.js`; `nam5` or `us-central1` works).
+2. Firebase web config: the six `VITE_FIREBASE_*` values on Vercel (done, per Jon).
+3. Rules: `firebase deploy --only firestore:rules --project jct-web-d8780`.
+4. Mailjet: verify the sender jon@consultjct.com (or the domain, with SPF and DKIM).
+5. Secrets: `firebase functions:secrets:set MAILJET_API_KEY --project jct-web-d8780`, then `MAILJET_SECRET_KEY` (pasted at the prompt; never in a file).
+6. Function: `firebase deploy --only functions --project jct-web-d8780` (from the repo root; turns on the Cloud Functions, Build, Artifact Registry, Eventarc and Secret Manager APIs).
+7. App Check, steps 1–4 above.
+8. One real test request on the live site: the email arrives and the document gets `emailedAt`.
+9. After launch: App Check step 5.
+
 ## Session 3a (2026-11-20): the six pages, by-host noindex, PR CI warnings. Branch `feat/pages`
 
 Done:

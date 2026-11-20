@@ -1,7 +1,7 @@
 <!--
 	Free Consult (screens/free-consult-*; copy-map › Free Consult): 5fr / 7fr. Left: page header,
-	lead and Jon's contact line; right: the Calendly booking block, top-aligned with the eyebrow.
-	Under 1000px: one column, the block under the copy. The intake form comes in Session 3b.
+	lead and Jon's contact line; right: the Calendly booking block (or the intake form when Calendly can't show), top-aligned
+	with the eyebrow. Under 1000px: one column, the block under the copy.
 -->
 <script>
 	import { freeConsult as f } from '$lib/content/free-consult';
@@ -10,7 +10,7 @@
 	import Section from '$components/layout/Section.svelte';
 	import PageHeader from '$components/layout/PageHeader.svelte';
 	import ResponsiveImage from '$components/ui/ResponsiveImage.svelte';
-	import CalendlyBlock from '$components/booking/CalendlyBlock.svelte';
+	import Booking from '$components/booking/Booking.svelte';
 	import MissingLink from '$components/placeholder/MissingLink.svelte';
 
 	const tel = 'tel:+1' + site.phone.replace(/\D/g, '');
@@ -48,5 +48,5 @@
 			</div>
 		</div>
 	</PageHeader>
-	<CalendlyBlock />
+	<Booking />
 </Section>

@@ -76,7 +76,10 @@ export const labels = {
 			email: 'Enter an email like name@company.com.',
 			company: 'Enter your company.',
 			stage: 'Pick the one closest to where you are.',
-			blocker: "Tell me what's in the way."
+			blocker: "Tell me what's in the way.",
+			// Not in the copy map: shown only for a link that can't be made into an https:// address
+			// ("example.com" and "http://…" are fixed quietly). Needs Jon's wording.
+			link: "[PLACEHOLDER: Needs the error message for a link that isn't a web address]"
 		},
 		sendError: "That didn't send. Your answers are still here. Try again, or call 702-518-2998.",
 		success: {

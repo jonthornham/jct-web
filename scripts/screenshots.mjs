@@ -2,7 +2,8 @@
 // to JCT's reference PNGs).
 //
 //   npm run dev:preview                 (in another terminal; serves http://localhost:35173)
-//   npm run screenshots -- [--base http://localhost:35173] [--set shell|pages] [--only header,home]
+//   npm run screenshots -- [--base http://localhost:35173] [--set shell|pages|intake]
+//                          [--only header,home]
 //                          [--tag before|after]
 //
 // For every view, width (390 / 1440) and theme, it takes the design's reference image and the
@@ -96,15 +97,58 @@ const SETS = {
 						}
 					: undefined
 		}
+	})),
+	// Session 3b: the intake form's five states on /free-consult, each beside its design screen.
+	// Calendly is blocked so the form shows (after the 8s wait). Needs the dev server
+	// (`npm run dev:preview`, which always uses the emulators) and `npm run emulators`.
+	intake: ['form', 'form-errors', 'sending', 'send-error', 'success'].map((state) => ({
+		view: state,
+		ref: screen(`free-consult-${state}`),
+		crop: 'full',
+		built: {
+			path: '/free-consult',
+			pick: 'full',
+			setup: async (ctx) => {
+				await ctx.route(/assets\.calendly\.com/, (r) => r.abort());
+				// Firestore emulator traffic: held (sending) or cut (send error).
+				if (state === 'sending') await ctx.route(/:38180\//, () => {});
+				if (state === 'send-error') await ctx.route(/:38180\//, (r) => r.abort());
+			},
+			before: (p) => intakeState(p, state)
+		}
 	}))
 };
 
+// The screens' sample input (copy-map › "Sample input in state screens": demo values only).
+const SAMPLE = {
+	name: 'Dana Reyes',
+	email: 'dana@example.com',
+	company: 'Example Co.',
+	blocker: 'Our quotes from two factories are three times apart.'
+};
+async function intakeState(p, state) {
+	await p.waitForSelector('form[novalidate]', { state: 'visible', timeout: 15000 });
+	if (state === 'form') return;
+	await p.waitForTimeout(3500); // past the form's bot check (3s on the page)
+	await p.fill('#name', SAMPLE.name);
+	await p.fill('#email', state === 'form-errors' ? 'dana@' : SAMPLE.email);
+	await p.fill('#company', SAMPLE.company);
+	if (state !== 'form-errors') await p.locator('label', { hasText: 'Prototype' }).click();
+	await p.fill('#blocker', SAMPLE.blocker);
+	await p.click('button[type="submit"]');
+	if (state === 'sending') await p.waitForTimeout(500);
+	if (state === 'send-error') await p.waitForSelector('[role="alert"]', { timeout: 20000 });
+	if (state === 'success') await p.waitForSelector('[role="status"] h2', { timeout: 15000 });
+	await p.evaluate(() => scrollTo(0, 0));
+}
+
 // --- capture -----------------------------------------------------------------------------------
-async function shoot(browser, url, { pick, before }, w, theme) {
+async function shoot(browser, url, { pick, before, setup }, w, theme) {
 	const ctx = await browser.newContext({
 		colorScheme: theme,
 		viewport: { width: w, height: w < 760 ? 844 : 1000 }
 	});
+	if (setup) await setup(ctx);
 	const page = await ctx.newPage();
 	await page.goto(url, { waitUntil: 'networkidle' });
 	await page.evaluate(() => document.fonts.ready);
