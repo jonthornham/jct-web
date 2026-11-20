@@ -17,6 +17,7 @@ Done:
 - **App Check** (reCAPTCHA Enterprise) starts when `VITE_APPCHECK_SITE_KEY` is set; debug token in the emulators. Enforcement stays off.
 - **Firebase loads only on /free-consult,** and only when the form is on screen.
 - **Lighthouse:** 3 loads per page, median; same thresholds.
+- **Fonts self-hosted:** Geist and Geist Mono now come from `static/fonts` (SIL OFL), preloaded, instead of Google Fonts. On GitHub's machine the late Google font reflowed long pages (layout shift 0.137 on Privacy, Performance 88); now 0.000 on every page.
 - **Screenshots:** the five states beside the design, 390/1440, light/dark: `docs/screenshots/intake/`.
 - **Ports:** JCT's Firestore websocket moved 39150 → 39160 (Wingbeat's emulator holds 39150).
 

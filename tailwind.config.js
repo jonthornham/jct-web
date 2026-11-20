@@ -23,7 +23,7 @@ export default {
 			'2xl': '1280px'
 		},
 		extend: {
-			// Geist and Geist Mono, loaded in src/app.html.
+			// Geist and Geist Mono, self-hosted (@font-face in src/app.css, preloaded in src/app.html).
 			fontFamily: {
 				sans: ['Geist', ...defaultTheme.fontFamily.sans],
 				mono: ['"Geist Mono"', ...defaultTheme.fontFamily.mono]
