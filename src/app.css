@@ -1,0 +1,244 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * JCT design tokens: design/jct-download-01/tokens/tokens.css, word for word below (colours light
+ * and dark, type, layout, radii, shadows, breakpoints). Same names and RGB-channel format as
+ * lamp-web, so tailwind.config.js maps them (bg-primary, text-fg-muted, bg-primary/10).
+ * The theme switches via <html data-theme="light|dark">, set before first paint in src/app.html.
+ * Components never hard-code colours.
+ */
+@layer base {
+	:root,
+	[data-theme='light'] {
+		color-scheme: light;
+		--canvas: 255 255 255; /* #FFFFFF */
+		--surface: 255 255 255; /* #FFFFFF */
+		--surface-2: 247 249 251; /* #F7F9FB */
+		--surface-3: 239 242 245; /* #EFF2F5 */
+		--border: 227 231 236; /* #E3E7EC */
+		--border-strong: 205 211 218; /* #CDD3DA */
+		--fg: 11 18 32; /* #0B1220 */
+		--fg-muted: 78 88 102; /* #4E5866 */
+		--fg-subtle: 100 110 123; /* #646E7B */
+		--primary: 0 105 148; /* #006994  JCT (Lamp #0272B4) */
+		--primary-hover: 0 85 127; /* #00557F  JCT (Lamp #025E95) */
+		--primary-fg: 255 255 255; /* #FFFFFF */
+		--primary-soft: 232 244 248; /* #E8F4F8  JCT (Lamp #EEF5FB) */
+		--link: 0 105 148; /* #006994  JCT (Lamp #0369A1) */
+		--focus: 0 123 167; /* #007BA7  JCT (Lamp #0284C7) */
+		--accent: 0 123 167; /* #007BA7  JCT (Lamp #0A8FD0) */
+		--accent-hover: 0 105 148; /* #006994  JCT (Lamp #0284C7) */
+		--accent-fg: 255 255 255; /* #FFFFFF  JCT (Lamp #03111B) */
+		--accent-soft: 232 244 248; /* #E8F4F8  JCT (Lamp #F0F8FD) */
+		--accent-text: 0 105 148; /* #006994  JCT (Lamp #0369A1) */
+		--success: 30 122 76; /* #1E7A4C */
+		--success-solid: 30 122 76; /* #1E7A4C */
+		--success-fg: 255 255 255; /* #FFFFFF */
+		--success-soft: 237 247 241; /* #EDF7F1 */
+		--warning: 138 93 10; /* #8A5D0A */
+		--warning-solid: 233 180 76; /* #E9B44C */
+		--warning-fg: 31 22 0; /* #1F1600 */
+		--warning-soft: 252 246 232; /* #FCF6E8 */
+		--danger: 190 58 58; /* #BE3A3A */
+		--danger-solid: 190 58 58; /* #BE3A3A */
+		--danger-fg: 255 255 255; /* #FFFFFF */
+		--danger-soft: 252 240 240; /* #FCF0F0 */
+		--neutral: 100 110 123; /* #646E7B */
+		--neutral-solid: 100 110 123; /* #646E7B */
+		--neutral-fg: 255 255 255; /* #FFFFFF */
+		--neutral-soft: 239 242 245; /* #EFF2F5 */
+	}
+
+	[data-theme='dark'] {
+		color-scheme: dark;
+		--canvas: 7 10 14; /* #070A0E */
+		--surface: 14 19 25; /* #0E1319 */
+		--surface-2: 20 26 34; /* #141A22 */
+		--surface-3: 27 34 44; /* #1B222C */
+		--border: 35 44 55; /* #232C37 */
+		--border-strong: 54 64 77; /* #36404D */
+		--fg: 238 242 246; /* #EEF2F6 */
+		--fg-muted: 161 171 183; /* #A1ABB7 */
+		--fg-subtle: 133 144 157; /* #85909D */
+		--primary: 0 123 167; /* #007BA7  JCT (Lamp #0272B4) */
+		--primary-hover: 0 105 148; /* #006994  JCT (Lamp #0284C7) */
+		--primary-fg: 255 255 255; /* #FFFFFF */
+		--primary-soft: 10 29 38; /* #0A1D26  JCT (Lamp #0B1D2C) */
+		--link: 103 195 227; /* #67C3E3  JCT (Lamp #7CC8F2) */
+		--focus: 91 192 222; /* #5BC0DE  JCT (Lamp #38BDF8) */
+		--accent: 91 192 222; /* #5BC0DE  JCT (Lamp #38BDF8) */
+		--accent-hover: 125 211 240; /* #7DD3F0  JCT (Lamp #7DD3FC) */
+		--accent-fg: 11 18 32; /* #0B1220  JCT (Lamp #03111B) */
+		--accent-soft: 10 28 36; /* #0A1C24  JCT (Lamp #0C1C27) */
+		--accent-text: 125 211 240; /* #7DD3F0  JCT (Lamp #7CC8F2) */
+		--success: 92 196 146; /* #5CC492 */
+		--success-solid: 92 196 146; /* #5CC492 */
+		--success-fg: 4 20 11; /* #04140B */
+		--success-soft: 14 31 23; /* #0E1F17 */
+		--warning: 233 180 76; /* #E9B44C */
+		--warning-solid: 233 180 76; /* #E9B44C */
+		--warning-fg: 31 22 0; /* #1F1600 */
+		--warning-soft: 33 27 12; /* #211B0C */
+		--danger: 240 122 116; /* #F07A74 */
+		--danger-solid: 240 122 116; /* #F07A74 */
+		--danger-fg: 26 3 3; /* #1A0303 */
+		--danger-soft: 42 20 20; /* #2A1414 */
+		--neutral: 149 157 167; /* #959DA7 */
+		--neutral-solid: 91 99 110; /* #5B636E */
+		--neutral-fg: 255 255 255; /* #FFFFFF */
+		--neutral-soft: 27 34 44; /* #1B222C */
+	}
+
+	/* Non-colour tokens. Names follow lamp-web's Tailwind keys (mk-*) where lamp-web has one.
+   radius-*, shadow-*, bp-* are new NAMES for values lamp-web writes inline; the values are lamp-web's. */
+	:root {
+		/* Type families (both SIL Open Font License 1.1, free; Google Fonts) */
+		--font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+		--font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+		--text-mk-hero: clamp(2.75rem, 1.5rem + 4vw, 4.5rem);
+		--text-mk-hero-lh: 1;
+		--text-mk-hero-tracking: -0.05em;
+		--text-mk-hero-weight: 600;
+		--text-mk-display: clamp(2.5rem, 1.6rem + 3.2vw, 4rem);
+		--text-mk-display-lh: 1.02;
+		--text-mk-display-tracking: -0.04em;
+		--text-mk-display-weight: 600;
+		--text-mk-h1: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem);
+		--text-mk-h1-lh: 1.06;
+		--text-mk-h1-tracking: -0.035em;
+		--text-mk-h1-weight: 600;
+		--text-mk-h2: clamp(1.875rem, 1.4rem + 1.6vw, 2.5rem);
+		--text-mk-h2-lh: 1.12;
+		--text-mk-h2-tracking: -0.03em;
+		--text-mk-h2-weight: 600;
+		--text-mk-h3: clamp(1.625rem, 1.2rem + 1vw, 2rem);
+		--text-mk-h3-lh: 1.18;
+		--text-mk-h3-tracking: -0.01em;
+		--text-mk-h3-weight: 600;
+		--text-mk-title: 1.375rem;
+		--text-mk-title-lh: 1.3;
+		--text-mk-title-tracking: -0.005em;
+		--text-mk-title-weight: 600;
+		--text-mk-lead: 1.1875rem;
+		--text-mk-lead-lh: 1.6;
+		--text-mk-lead-tracking: 0;
+		--text-mk-lead-weight: 400;
+		--text-mk-body: 1.0625rem;
+		--text-mk-body-lh: 1.65;
+		--text-mk-body-tracking: 0;
+		--text-mk-body-weight: 400;
+		--text-mk-ui: 0.9375rem;
+		--text-mk-ui-lh: 1.5;
+		--text-mk-ui-tracking: 0;
+		--text-mk-ui-weight: 400;
+		--text-mk-eyebrow: 0.8125rem;
+		--text-mk-eyebrow-lh: 1.2;
+		--text-mk-eyebrow-tracking: 0.14em;
+		--text-mk-eyebrow-weight: 500;
+		--text-sm: 0.8125rem;
+		--text-sm-lh: 1.25rem;
+		--text-sm-tracking: 0;
+		--text-sm-weight: 400;
+		--text-xs: 0.6875rem;
+		--text-xs-lh: 1rem;
+		--text-xs-tracking: 0;
+		--text-xs-weight: 400;
+
+		/* Layout */
+		--max-w-mk-content: 75rem; /* 1200px */
+		--spacing-mk-gutter: clamp(1.25rem, 4vw, 2.5rem); /* 20px → 40px */
+		--spacing-mk-section: clamp(3.5rem, 7vw, 5.5rem); /* 56px → 88px */
+		--header-h: 64px;
+
+		/* Spacing scale used on the pages (px): 4 6 8 12 16 20 24 28 32 40 48 56 64 80 88 */
+
+		/* Radii */
+		--radius-pill: 999px; /* buttons, chips, pills, avatars */
+		--radius-input: 8px; /* marketing inputs */
+		--radius-sm: 6px; /* slot labels, skeleton bars */
+		--radius-step: 8px; /* step-number squares */
+		--radius-icon: 10px; /* stage icon tiles */
+		--radius-md: 14px; /* alerts, week blocks */
+		--radius-card: 18px; /* cards, Calendly block */
+		--radius-media: 24px; /* hero/case media, quote panel, CTA block */
+
+		/* Borders and shadows */
+		--ring: inset 0 0 0 1px rgb(var(--border)); /* cards */
+		--ring-strong: inset 0 0 0 1px rgb(var(--border-strong)); /* inputs, secondary button */
+		--shadow-raised: 0 16px 40px -18px rgb(11 18 32 / 0.35); /* + --ring: hero float card, menus */
+		--shadow-toast: 0 10px 30px -12px rgb(0 0 0 / 0.35);
+		--shadow-dialog: 0 30px 60px -20px rgb(0 0 0 / 0.5);
+		--shadow-seg: 0 1px 2px rgb(11 18 32 / 0.18); /* selected theme-toggle segment */
+		--focus-ring: 2px solid rgb(var(--focus)); /* outline, offset 2px */
+
+		/* Breakpoints (min-width, px). CSS variables can't drive media queries: use these in Tailwind screens. */
+		--bp-sm: 760px; /* phone → tablet: header CTA full label, offers 2-up, stage rail horizontal */
+		--bp-nav: 900px; /* menu button → full nav */
+		--bp-lg: 1000px; /* 2-up layouts side by side */
+		--bp-xl: 1180px; /* offers 4-up, stage rail 6-up */
+		--bp-2xl: 1280px; /* tagline beside the wordmark */
+	}
+}
+
+@layer base {
+	html {
+		@apply bg-canvas font-sans text-fg antialiased;
+	}
+	body {
+		@apply bg-canvas text-fg;
+	}
+	a {
+		@apply text-link;
+	}
+	:focus-visible {
+		@apply outline outline-2 outline-offset-2 outline-focus;
+	}
+	/* Prices, weeks, years, step numbers and the phone number: Geist Mono, tabular figures. */
+	.font-mono {
+		font-variant-numeric: tabular-nums;
+	}
+}
+
+@layer components {
+	/* The striped image slot (components/placeholders.md). Preview builds only. */
+	.image-slot {
+		background: repeating-linear-gradient(
+			135deg,
+			rgb(var(--surface-2)) 0 12px,
+			rgb(var(--surface-3)) 12px 24px
+		);
+	}
+
+	/* Legal pages (section-layouts.md › Legal pages): the mdsvex text in one 704px column.
+	   H2s at mk-title with 16px extra top margin, paragraphs mk-body, gap 20px, bold lead-ins in
+	   fg 600, inline links in link. */
+	.prose-legal {
+		@apply flex max-w-[44rem] flex-col gap-5 text-mk-body text-fg-muted;
+	}
+	.prose-legal > :is(p, ul, ol) {
+		@apply m-0 text-pretty;
+	}
+	.prose-legal > ul {
+		@apply list-disc pl-6;
+	}
+	.prose-legal > ol {
+		@apply list-decimal pl-6;
+	}
+	.prose-legal li + li {
+		@apply mt-2;
+	}
+	.prose-legal > h2 {
+		@apply m-0 mt-4 scroll-mt-24 text-mk-title text-fg;
+	}
+	.prose-legal > h3 {
+		@apply m-0 mt-2 text-mk-body font-semibold text-fg;
+	}
+	.prose-legal strong {
+		@apply font-semibold text-fg;
+	}
+	.prose-legal a {
+		@apply text-link underline underline-offset-4;
+	}
+}

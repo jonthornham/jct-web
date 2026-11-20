@@ -8,3 +8,16 @@ node_modules
 *-debug.log
 service-account*.json
 *.serviceAccount.json
+
+# Build and deploy outputs
+/.vercel
+/dist
+
+# Firebase emulator logs
+firestore-debug.log
+ui-debug.log
+.firebase
+
+# Design bundles: the extracted handoff is committed, the full-page screens and the zip are not.
+design/**/*.zip
+design/**/screens/
