@@ -42,5 +42,5 @@ Picked on 2026-11-20. Nothing was listening on 30000–39999. Lamp uses the 2xxx
 | Hosting (if used) | 35000 |
 | Vite dev / preview | 35173 / 34173 |
 
-`firebase.json` in this repo and in the old repo (rules tests) use this block with `--project demo-jct`.
+The old repo's `firebase.json` (rules tests) already uses this block. This repo's `firebase.json` (Session 2) must use it too, always with `--project demo-jct`.
 Check a port before starting: `lsof -nP -iTCP:<port> -sTCP:LISTEN`. Only stop processes on these ports.
