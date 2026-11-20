@@ -77,9 +77,9 @@ export const labels = {
 			company: 'Enter your company.',
 			stage: 'Pick the one closest to where you are.',
 			blocker: "Tell me what's in the way.",
-			// Not in the copy map: shown only for a link that can't be made into an https:// address
-			// ("example.com" and "http://…" are fixed quietly). Needs Jon's wording.
-			link: "[PLACEHOLDER: Needs the error message for a link that isn't a web address]"
+			// Not in the copy map: Jon, Nov 20 (3b part 2 preface). Shown only for a link that can't be
+			// made into an https:// address ("example.com" and "http://…" are fixed quietly).
+			link: 'Enter a link like https://example.com.'
 		},
 		sendError: "That didn't send. Your answers are still here. Try again, or call 702-518-2998.",
 		success: {

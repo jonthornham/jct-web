@@ -21,7 +21,14 @@ Done:
 - **Screenshots:** the five states beside the design, 390/1440, light/dark: `docs/screenshots/intake/`.
 - **Ports:** JCT's Firestore websocket moved 39150 → 39160 (Wingbeat's emulator holds 39150).
 
-Placeholders left (9 lines): the 8 from 3a, plus the error message for a link that can't be made into a web address (`labels.form.errors.link`, not in the copy map).
+Placeholders left (8 lines, the same 8 as 3a). The bad-link message is Jon's: "Enter a link like https://example.com." (part 2 preface).
+
+Decided by Jon (part 2 preface):
+- **JavaScript off:** keep the email-app fallback (`mailto:` form).
+- **Previews:** the `VITE_FIREBASE_*` values stay on Production **and** Preview. Production builds are blocked by placeholders until launch, so a preview is the only place to test the form end to end; previews are behind Vercel's login and every test email goes to Jon.
+- **Sending state:** fields dimmed to 60%, per the written spec (the sending screen draws them at full strength).
+- **Fonts:** keep them self-hosted. **The site no longer loads anything from Google Fonts** (no `fonts.googleapis.com` or `fonts.gstatic.com` request on any page).
+- **Port 39160** for JCT's Firestore websocket is fine.
 
 ### For docs/LAUNCH.md (part 2): App Check, exact console steps
 1. Google Cloud console, project **jct-web-d8780** → Security → **reCAPTCHA** → enable the reCAPTCHA Enterprise API if asked → **Create key**: type *Website*, domains `www.consultjct.com` and `consultjct.com` (add the Vercel preview domain only if previews should pass App Check) → no "checkbox challenge" → Create. Copy the **key ID**.
@@ -31,15 +38,54 @@ Placeholders left (9 lines): the 8 from 3a, plus the error message for a link th
 5. After launch, once real traffic shows as verified (close to 100% for about a week): App Check → APIs → Cloud Firestore → **Enforce** → Confirm. Unverified requests are then refused.
 
 ### Other launch steps (order, for LAUNCH.md)
-1. Firestore database in jct-web-d8780 exists; its location must suit the function region (`us-central1` in `functions/index.js`; `nam5` or `us-central1` works).
+0. **First:** Firebase console → jct-web-d8780 → **Firestore Database** must exist. If it doesn't: **Create database** → **Production mode** → location **nam5 (United States)**. The function region must match: `us-central1` goes with `nam5` (what the code uses now). If another location is picked, change one line in `functions/index.js`: `export const REGION = 'us-central1';` → the region for that location (e.g. `us-east1` for a `us-east1` database), then redeploy the function.
+1. (Jon will tell the manager what Firestore shows; until then the code keeps `us-central1`.)
 2. Firebase web config: the six `VITE_FIREBASE_*` values on Vercel (done, per Jon).
 3. Rules: `firebase deploy --only firestore:rules --project jct-web-d8780`.
 4. Mailjet: verify the sender jon@consultjct.com (or the domain, with SPF and DKIM).
 5. Secrets: `firebase functions:secrets:set MAILJET_API_KEY --project jct-web-d8780`, then `MAILJET_SECRET_KEY` (pasted at the prompt; never in a file).
 6. Function: `firebase deploy --only functions --project jct-web-d8780` (from the repo root; turns on the Cloud Functions, Build, Artifact Registry, Eventarc and Secret Manager APIs).
 7. App Check, steps 1–4 above.
-8. One real test request on the live site: the email arrives and the document gets `emailedAt`.
+8. End-to-end test on a **Vercel preview link** (behind Vercel's login; previews have the Firebase values): send one request; the email reaches jon@consultjct.com and the document in `consults` gets `emailedAt`.
+   Then again on **https://www.consultjct.com** after cutover.
 9. After launch: App Check step 5.
+
+### Package warnings (npm audit, Nov 20): left for a maintenance session (Jon)
+29 in the site packages: 1 critical, 19 high, 8 moderate, 1 low. `functions/`: 0. Most come from build and test tools that never reach the browser. "Direct" = listed in package.json; otherwise it comes in through another package.
+
+| Package | Severity | How it gets in | Fix npm offers |
+|---|---|---|---|
+| tar | critical | via a dependency | update in range |
+| @firebase/firestore | high | via @grpc/grpc-js | firebase@9.14.0 (major) |
+| @firebase/firestore-compat | high | via @firebase/firestore | firebase@9.14.0 (major) |
+| @firebase/rules-unit-testing | high | direct | @firebase/rules-unit-testing@2.0.7 (major) |
+| @grpc/grpc-js | high | via a dependency | firebase@9.14.0 (major) |
+| @sveltejs/kit | high | direct | update in range |
+| brace-expansion | high | via a dependency | update in range |
+| browserslist | high | via a dependency | update in range |
+| devalue | high | via a dependency | update in range |
+| firebase | high | direct | firebase@9.14.0 (major) |
+| flatted | high | via a dependency | update in range |
+| js-yaml | high | via a dependency | update in range |
+| minimatch | high | via a dependency | update in range |
+| nanoid | high | via a dependency | update in range |
+| picomatch | high | via a dependency | update in range |
+| postcss | high | direct | update in range |
+| rollup | high | via a dependency | update in range |
+| sharp | high | direct | sharp@0.35.5 (major) |
+| source-map-js | high | via a dependency | update in range |
+| vite | high | direct | update in range |
+| @sveltejs/adapter-vercel | moderate | direct | @sveltejs/adapter-vercel@7.0.5 (major) |
+| @vercel/nft | moderate | via glob | @sveltejs/adapter-vercel@7.0.5 (major) |
+| ajv | moderate | via a dependency | update in range |
+| baseline-browser-mapping | moderate | via a dependency | update in range |
+| glob | moderate | via a dependency | @sveltejs/adapter-vercel@7.0.5 (major) |
+| postcss-selector-parser | moderate | via a dependency | update in range |
+| svelte | moderate | direct | update in range |
+| yaml | moderate | via a dependency | update in range |
+| cookie | low | via a dependency | update in range |
+
+The Firebase rows (firebase, @firebase/firestore, -compat, @grpc/grpc-js, @firebase/rules-unit-testing) all trace to one @grpc/grpc-js advisory; npm's "fix" is a downgrade to firebase@9.14.0, which is not a real fix. @grpc/grpc-js runs only in Node (tests), not in the browser bundle.
 
 ## Session 3a (2026-11-20): the six pages, by-host noindex, PR CI warnings. Branch `feat/pages`
 
