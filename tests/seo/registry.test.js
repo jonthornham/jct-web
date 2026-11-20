@@ -2,7 +2,8 @@
 // canonical and OG image, and valid JSON-LD. Plus robots.txt and sitemap.xml.
 import assert from 'node:assert/strict';
 import { describe, test } from 'node:test';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import {
 	seoPages,
 	headFor,
@@ -116,11 +117,17 @@ describe('SEO registry', () => {
 	});
 
 	test('no page sets its own <title> outside the registry (404 excepted)', () => {
-		const files = [
-			'src/routes/+page.svelte',
-			'src/components/layout/PageStub.svelte',
-			'src/components/layout/LegalPage.svelte'
-		];
+		const files = [];
+		const walk = (d) => {
+			for (const n of readdirSync(d)) {
+				const p = join(d, n);
+				if (statSync(p).isDirectory()) walk(p);
+				else if (n.endsWith('.svelte') && !n.startsWith('+error') && n !== 'SeoHead.svelte')
+					files.push(p);
+			}
+		};
+		walk('src');
+		assert.ok(files.length > 20, 'found the components (sanity)');
 		for (const f of files) assert.doesNotMatch(readFileSync(f, 'utf8'), /<title>/, f);
 	});
 });

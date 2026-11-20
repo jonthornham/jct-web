@@ -7,6 +7,30 @@
 - **Analytics on the old site: none.** Search Console is the only traffic data.
 - Old site: **Email/Password sign-in is OFF** in `jctconsulting-a2ed3` (done by Jon in the console). Nobody can sign in or register on the old site. The new site has no login.
 
+## Session 3a (2026-11-20): the six pages, by-host noindex, PR CI warnings. Branch `feat/pages`
+
+Done:
+- **Search engines by host:** only `www.consultjct.com` is indexable. Every other host (previews, `*.vercel.app` including production, the apex) gets `X-Robots-Tag: noindex` from Vercel's routing. Tested per host on the real build.
+- **Placeholders in CI:** a warning on PRs and a failure on `main`. Any production build (Vercel's included) still fails while one is left.
+- **Pages:** Home, How I Work, Services, Work, About and Free Consult built in full from the screens and specs. Privacy and Terms got the page-end panel.
+  - Copy is in `src/lib/content/` and labels in config.
+  - Text the copy map names without quoting (Sprint weeks, case studies, About body, FAQ answer 1) is transcribed from the screens.
+- **Calendly:** the inline widget on `/free-consult` only, loaded when the block nears the screen, with a skeleton until it shows. It uses `site.calendly` = Jon's account page for now.
+- **Missing links:** `site.linkedin`, `site.stripe.advisory` and `site.stripe.sprintDeposit` are placeholders, never `href="#"`.
+- **Checks:** Lighthouse SEO 100 and Accessibility 100 on every page, Performance ≥ 90 (enforced in CI).
+- **Screenshots:** before/after, design beside build, in `docs/screenshots/pages/`.
+
+Placeholders left (12 lines; production builds fail until each is replaced or its slot removed):
+- LinkedIn URL; Stripe payment links for advisory hours and the Sprint deposit.
+- FAQ answers 2–5 (not in the design bundle).
+- FLO Cycling logo (single-colour SVG); other client logos, with permission.
+- Photos: prototyping or 3D-print (How I Work); Seltza CAD render and sample or factory photo (Work); GSE marketplace screenshot (Work).
+
+Waiting on Jon:
+- The 15-minute Calendly event link (the account page shows a "30 Minute Meeting" today).
+- The items above, or a decision to drop a slot at launch (HANDOFF "Still open" 4).
+- Note: Vercel production deploys fail while placeholders remain (by design).
+
 ## Session 2 (2026-11-20): scaffold, shell, SEO, redirects, CI. PR #3 (`feat/scaffold`)
 
 Done (2a):

@@ -23,16 +23,18 @@ The old site is SvelteKit on **Vercel**, canonical host **www.consultjct.com**. 
 | `npm run build` / `build:preview` | Production build (fails on any placeholder) / preview build |
 | `npm run preview` | Serve the last build on 34173 |
 | `npm run lint` | Prettier + ESLint |
-| `npm run check` | svelte-check, production-placeholder check, label-config test |
+| `npm run check` | `check:code` (svelte-check, label-config test) + `check:placeholders` (production rule) |
 | `npm run test:unit` | Unit tests (`tests/unit`) |
 | `npm run test:seo` | Builds, then the SEO registry, built head tags, every old URL in `docs/SEO_INVENTORY.csv` (200 or one permanent redirect), and the link check |
 | `npm run check:links` | Internal link check on the last build |
-| `npm run lighthouse` | Lighthouse on all 8 pages of the last build; SEO must be 100 |
-| `npm run images` / `screenshots` | Image pipeline / design-vs-build screenshots |
+| `npm run lighthouse` | Lighthouse on all 8 pages of the last build: SEO 100, Accessibility 100, Performance ≥ 90 |
+| `npm run images` / `screenshots` | Image pipeline / design-vs-build screenshots (`--set shell\|pages`, `--tag before\|after`) |
 
-CI (`.github/workflows/ci.yml`) runs lint, check, unit, test:seo, the link check and Lighthouse on every PR.
+CI (`.github/workflows/ci.yml`) runs lint, check:code, the placeholder check (a warning on PRs, a failure on `main`), unit, test:seo, the link check and Lighthouse on every PR.
 
-SEO lives in `src/lib/seo/` (`registry.js` for head tags, sitemap and robots.txt; `redirects.js` for old URLs). `scripts/vercel-output.js` writes the redirects and the preview-only `X-Robots-Tag: noindex` into Vercel's routing at build time.
+SEO lives in `src/lib/seo/` (`registry.js` for head tags, sitemap and robots.txt; `redirects.js` for old URLs). `scripts/vercel-output.js` writes the redirects and `X-Robots-Tag: noindex` for every host except `www.consultjct.com` into Vercel's routing at build time.
+
+Page copy lives in `src/lib/content/` (one file per page), UI labels in `src/lib/config/labels.js`, links and facts in `src/lib/config/site.js`. A link Jon hasn't sent is a `[PLACEHOLDER: …]` string in `site.js` (rendered by `MissingLink.svelte`; never `href="#"`).
 
 ## Safety rules (always)
 - Branches and PRs only. Never commit to `main` directly.
