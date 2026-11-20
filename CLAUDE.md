@@ -14,6 +14,8 @@ Jon is an engineer, not a web developer. Report in plain words.
 
 The old site is SvelteKit on **Vercel**, canonical host **www.consultjct.com**. The new site will have 6 pages; Jon supplies the names. See `docs/`.
 
+**New site on Vercel:** Jon set the new Vercel project's Node.js version to **24.x** (Settings → Build and Deployment, Nov 20). It matches `engines`, `.nvmrc` and the adapter's `runtime: 'nodejs24.x'`. Preview deploys have `PUBLIC_SHOW_PLACEHOLDERS=true` (Preview only, never Production).
+
 ## Safety rules (always)
 - Branches and PRs only. Never commit to `main` directly.
 - Merge only on Jon's word: `gh pr merge N --merge --match-head-commit <head>`. Never `--force`.

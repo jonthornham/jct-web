@@ -1,5 +1,6 @@
 // svelte.config.js (from lamp-web)
 import vercel from '@sveltejs/adapter-vercel';
+import { robotsAdapter } from './scripts/robots.js';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { mdsvex } from 'mdsvex';
 import rehypeSlug from 'rehype-slug';
@@ -24,11 +25,14 @@ const config = {
 	extensions: ['.svelte', '.md', '.svx'],
 	preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
 	kit: {
-		adapter: vercel({
-			// Node 24, matching "engines.node" in package.json and .nvmrc. Set explicitly because
-			// this adapter version refuses to infer a runtime from a local Node newer than 22.
-			runtime: 'nodejs24.x'
-		}),
+		// robotsAdapter: non-production deploys send X-Robots-Tag: noindex (scripts/robots.js).
+		adapter: robotsAdapter(
+			vercel({
+				// Node 24, matching "engines.node" in package.json and .nvmrc. Set explicitly because
+				// this adapter version refuses to infer a runtime from a local Node newer than 22.
+				runtime: 'nodejs24.x'
+			})
+		),
 		alias: {
 			$components: path.resolve(__dirname, 'src/components')
 			// $lib is provided by SvelteKit.

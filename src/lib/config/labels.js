@@ -98,8 +98,8 @@ export const labels = {
 		updated: 'Last updated November 20, 2026'
 	},
 	contact: {
-		// copy-map: a placeholder, "Needs contact email". HANDOFF "Still open" 2.
-		email: null
+		// Jon, Nov 20 (Session 2b preface): Privacy, Terms and the footer.
+		email: 'jon@consultjct.com'
 	},
 	footer: {
 		copyright: '© 2026 JCT Consulting'
@@ -107,7 +107,7 @@ export const labels = {
 };
 
 /** Keys copy-map marks as not supplied yet. They may be null until Jon sends them. */
-export const NOT_SUPPLIED = ['contact.email'];
+export const NOT_SUPPLIED = [];
 
 /** The value at a dotted path ('nav.work'), or undefined. */
 export const label = (path) => path.split('.').reduce((o, k) => o?.[k], labels);

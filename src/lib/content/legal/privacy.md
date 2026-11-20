@@ -1,15 +1,14 @@
 <!--
 	design/jct-download-01/legal/privacy.md, word for word, without its H1 and "Last updated" line
-	(the page shows those from config). The contact email is a placeholder until Jon sends it
-	(HANDOFF "Still open" 2).
+	(the page shows those from config). The contact email comes from config (labels.contact.email).
 -->
 <script>
-	import Placeholder from '$components/placeholder/Placeholder.svelte';
+	import { labels } from '$lib/config/labels';
 </script>
 
 ## Who we are
 
-consultjct.com is run by JCT Consulting, Jon Thornham's product and operations practice in Las Vegas, Nevada. In this policy, "I" and "we" mean JCT Consulting. Questions about your information go to <Placeholder>Needs contact email</Placeholder> or 702-518-2998.
+consultjct.com is run by JCT Consulting, Jon Thornham's product and operations practice in Las Vegas, Nevada. In this policy, "I" and "we" mean JCT Consulting. Questions about your information go to <a href="mailto:{labels.contact.email}">{labels.contact.email}</a> or 702-518-2998.
 
 ## What we collect
 

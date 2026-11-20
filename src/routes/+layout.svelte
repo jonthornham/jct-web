@@ -7,11 +7,6 @@
 	let { children } = $props();
 </script>
 
-<svelte:head>
-	<!-- Until launch (SEO session): no page is indexed. -->
-	<meta name="robots" content="noindex" />
-</svelte:head>
-
 <Shell>
 	{@render children()}
 </Shell>

@@ -1,6 +1,7 @@
 <!--
 	Footer (footer.md). 1440: brand block left, links right; © left, Privacy · Terms right.
 	390: everything stacks; the links wrap to two lines (4 + 2).
+	The contact email under the tagline is the optional footer line (HANDOFF "Still open" 2).
 -->
 <script>
 	import { labels } from '$lib/config/labels';
@@ -20,6 +21,11 @@
 					<Wordmark />
 				</a>
 				<p class="m-0 text-mk-ui text-fg-muted">{site.tagline}</p>
+				<a
+					href="mailto:{labels.contact.email}"
+					class="self-start rounded text-mk-ui text-fg-muted no-underline hover:text-primary active:text-primary"
+					>{labels.contact.email}</a
+				>
 			</div>
 			<nav
 				aria-label={labels.nav.footer}

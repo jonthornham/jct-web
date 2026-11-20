@@ -1,15 +1,14 @@
 <!--
 	design/jct-download-01/legal/terms.md, word for word, without its H1 and "Last updated" line
-	(the page shows those from config). The contact email is a placeholder until Jon sends it
-	(HANDOFF "Still open" 2).
+	(the page shows those from config). The contact email comes from config (labels.contact.email).
 -->
 <script>
-	import Placeholder from '$components/placeholder/Placeholder.svelte';
+	import { labels } from '$lib/config/labels';
 </script>
 
 ## About these terms
 
-These terms cover your use of consultjct.com and the services JCT Consulting (Jon Thornham, Las Vegas, Nevada) offers through it. By using the site or booking a service, you agree to them. Questions go to <Placeholder>Needs contact email</Placeholder> or 702-518-2998.
+These terms cover your use of consultjct.com and the services JCT Consulting (Jon Thornham, Las Vegas, Nevada) offers through it. By using the site or booking a service, you agree to them. Questions go to <a href="mailto:{labels.contact.email}">{labels.contact.email}</a> or 702-518-2998.
 
 ## The free consult
 
