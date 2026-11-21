@@ -6,8 +6,8 @@
 	- The skeleton shows until Calendly's `calendly.event_type_viewed` message (or
 	  `calendly.profile_page_viewed` for the account page), at most 8s.
 	- Theme change: the embed reloads with the other colour set.
-	- Failed load, no URL or no JavaScript: the spec's fallback is the intake form, which comes in
-	  Session 3b. Until then the card shows a plain link to the same Calendly page.
+	- Not loaded after 8s, or the script failed: `onfail()` and Booking.svelte swaps in the
+	  intake form. (No URL and no JavaScript are handled there too.)
 -->
 <script>
 	import { onMount } from 'svelte';
@@ -16,6 +16,8 @@
 	import { theme } from '$lib/stores/theme';
 	import { calendlyUrl, isCalendlyEvent, loadCalendly } from '$lib/calendly';
 
+	let { onfail = () => {} } = $props();
+
 	const base = site.calendly;
 	// Calendly's "calendar is showing" messages: an event page, or the account page (used until
 	// Jon sends the 15-minute event link).
@@ -23,7 +25,6 @@
 	// Skeleton: a 7 × 5 month grid and three time slots.
 	const DAYS = [...Array(35).keys()];
 	const SLOTS = [0, 1, 2];
-	const shownUrl = base?.replace(/^https?:\/\//, '');
 
 	let block = $state();
 	let embed = $state();
@@ -33,6 +34,7 @@
 	onMount(() => {
 		if (!base) {
 			status = 'failed';
+			onfail();
 			return;
 		}
 		const io = new IntersectionObserver(
@@ -62,7 +64,10 @@
 		status = 'loading';
 		let cancelled = false;
 		const timer = setTimeout(() => {
-			if (!cancelled && status === 'loading') status = 'failed';
+			if (!cancelled && status === 'loading') {
+				status = 'failed';
+				onfail();
+			}
 		}, 8000);
 		loadCalendly()
 			.then((Calendly) => {
@@ -71,7 +76,10 @@
 				Calendly.initInlineWidget({ url, parentElement: embed, resize: false });
 			})
 			.catch(() => {
-				if (!cancelled) status = 'failed';
+				if (!cancelled) {
+					status = 'failed';
+					onfail();
+				}
 			});
 		return () => {
 			cancelled = true;
@@ -117,15 +125,6 @@
 				bind:this={embed}
 				class="relative h-[668px] w-full sm:h-[612px] {status === 'loaded' ? '' : 'opacity-0'}"
 			></div>
-			<noscript>
-				<a href={base} class="text-link">{shownUrl}</a>
-			</noscript>
-		{:else}
-			<p class="m-0 text-mk-body">
-				<a href={base} rel="noopener" class="text-link underline-offset-4 hover:underline"
-					>{shownUrl}</a
-				>
-			</p>
 		{/if}
 	</div>
 </section>

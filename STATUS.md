@@ -7,6 +7,83 @@
 - **Analytics on the old site: none.** Search Console is the only traffic data.
 - Old site: **Email/Password sign-in is OFF** in `jctconsulting-a2ed3` (done by Jon in the console). Nobody can sign in or register on the old site. The new site has no login.
 
+## Session 3b part 2 (2026-11-20): Google Analytics, launch steps, form screenshots. Branch `feat/intake` (PR #5)
+
+Done:
+- **Google Analytics 4** (Jon's choice), gtag.js, not Tag Manager: `src/lib/analytics.js`, started from the root layout.
+  - Loads only on **www.consultjct.com** and only when `VITE_GA_MEASUREMENT_ID` is set (`.env.example`, empty). Never on localhost, previews, `*.vercel.app` or the bare consultjct.com. gtag.js is added after the page has loaded, when the browser is idle.
+  - **Consent Mode v2**, no banner: granted by default; `analytics_storage` and `ad_storage` denied for the EEA (30 countries), the UK and Switzerland. `ad_user_data` and `ad_personalization` are denied everywhere (nothing is for advertising). Google signals and ad personalisation signals off.
+  - `consult_submitted` is counted after a real save (never for a bot's quiet "sent").
+  - Tests: 10 unit tests (`tests/unit/analytics.test.js`). Browser proof on a build with a test ID: Google requests only on www (blocked, so nothing reached Google); none on consultjct.com, two vercel.app hosts or localhost.
+- **Privacy:** "When you visit" is the manager's Google Analytics paragraph, for Jon's approval in the PR.
+- **`docs/LAUNCH.md`:** Jon's launch steps in order.
+- **Screenshots:** every form state beside the design, 390/1440, light/dark: `docs/screenshots/form/` (the `intake` set renamed `form`).
+
+Known difference from the design: at 1440 the design puts the submit button and the contact line on one row; the build stacks them (also in part 1).
+
+## Session 3b part 1 (2026-11-20): intake form, email function, App Check. Branch `feat/intake`
+
+Done:
+- **Intake form** on /free-consult (components/intake-form.md), all five states: empty, errors, sending, sent, send error. It replaces Calendly when there's no booking URL, Calendly hasn't shown after 8s, or JavaScript is off (then it submits through the visitor's email app to jon@consultjct.com).
+- **Bots:** a hidden honeypot field and a 3-second time-on-page check. A bot sees the success card; nothing is written.
+- **Save first:** the browser writes one document to `consults`. `firestore.rules` allows only that create: exact fields, length limits, the server's timestamp, one of the five stages, an optional https:// link. No read, update or delete; everything else denied.
+- **Then email:** `functions/` `emailConsult` (2nd gen, Firestore onCreate, **Node.js 24**, the newest Cloud Functions runtime). One Mailjet email to jon@consultjct.com, Reply-To the visitor; never to the visitor. Sets `emailedAt`, or logs and sets `emailError`. No retries. In the emulator it logs the email and never calls Mailjet.
+- **App Check** (reCAPTCHA Enterprise) starts when `VITE_APPCHECK_SITE_KEY` is set; debug token in the emulators. Enforcement stays off.
+- **Firebase loads only on /free-consult,** and only when the form is on screen.
+- **Lighthouse:** 3 loads per page, median; same thresholds.
+- **Fonts self-hosted:** Geist and Geist Mono now come from `static/fonts` (SIL OFL), preloaded, instead of Google Fonts. On GitHub's machine the late Google font reflowed long pages (layout shift 0.137 on Privacy, Performance 88); now 0.000 on every page.
+- **Screenshots:** the five states beside the design, 390/1440, light/dark: `docs/screenshots/form/` (moved from `intake/` in part 2).
+- **Ports:** JCT's Firestore websocket moved 39150 → 39160 (Wingbeat's emulator holds 39150).
+
+Placeholders left (8 lines, the same 8 as 3a). The bad-link message is Jon's: "Enter a link like https://example.com." (part 2 preface).
+
+Decided by Jon (part 2 preface):
+- **JavaScript off:** keep the email-app fallback (`mailto:` form).
+- **Previews:** the `VITE_FIREBASE_*` values stay on Production **and** Preview. Production builds are blocked by placeholders until launch, so a preview is the only place to test the form end to end; previews are behind Vercel's login and every test email goes to Jon.
+- **Sending state:** fields dimmed to 60%, per the written spec (the sending screen draws them at full strength).
+- **Fonts:** keep them self-hosted. **The site no longer loads anything from Google Fonts** (no `fonts.googleapis.com` or `fonts.gstatic.com` request on any page).
+- **Port 39160** for JCT's Firestore websocket is fine.
+
+### Launch steps
+Moved to **`docs/LAUNCH.md`** (part 2): Firestore database (nam5 / `us-central1`), Mailjet domain and key, secrets, App Check, rules and function deploys with dry runs first, Google Analytics, the preview test, the www test after cutover, App Check enforcement.
+
+### Package warnings (npm audit, Nov 20): left for a maintenance session (Jon)
+29 in the site packages: 1 critical, 19 high, 8 moderate, 1 low. `functions/`: 0. Most come from build and test tools that never reach the browser. "Direct" = listed in package.json; otherwise it comes in through another package.
+
+| Package | Severity | How it gets in | Fix npm offers |
+|---|---|---|---|
+| tar | critical | via a dependency | update in range |
+| @firebase/firestore | high | via @grpc/grpc-js | firebase@9.14.0 (major) |
+| @firebase/firestore-compat | high | via @firebase/firestore | firebase@9.14.0 (major) |
+| @firebase/rules-unit-testing | high | direct | @firebase/rules-unit-testing@2.0.7 (major) |
+| @grpc/grpc-js | high | via a dependency | firebase@9.14.0 (major) |
+| @sveltejs/kit | high | direct | update in range |
+| brace-expansion | high | via a dependency | update in range |
+| browserslist | high | via a dependency | update in range |
+| devalue | high | via a dependency | update in range |
+| firebase | high | direct | firebase@9.14.0 (major) |
+| flatted | high | via a dependency | update in range |
+| js-yaml | high | via a dependency | update in range |
+| minimatch | high | via a dependency | update in range |
+| nanoid | high | via a dependency | update in range |
+| picomatch | high | via a dependency | update in range |
+| postcss | high | direct | update in range |
+| rollup | high | via a dependency | update in range |
+| sharp | high | direct | sharp@0.35.5 (major) |
+| source-map-js | high | via a dependency | update in range |
+| vite | high | direct | update in range |
+| @sveltejs/adapter-vercel | moderate | direct | @sveltejs/adapter-vercel@7.0.5 (major) |
+| @vercel/nft | moderate | via glob | @sveltejs/adapter-vercel@7.0.5 (major) |
+| ajv | moderate | via a dependency | update in range |
+| baseline-browser-mapping | moderate | via a dependency | update in range |
+| glob | moderate | via a dependency | @sveltejs/adapter-vercel@7.0.5 (major) |
+| postcss-selector-parser | moderate | via a dependency | update in range |
+| svelte | moderate | direct | update in range |
+| yaml | moderate | via a dependency | update in range |
+| cookie | low | via a dependency | update in range |
+
+The Firebase rows (firebase, @firebase/firestore, -compat, @grpc/grpc-js, @firebase/rules-unit-testing) all trace to one @grpc/grpc-js advisory; npm's "fix" is a downgrade to firebase@9.14.0, which is not a real fix. @grpc/grpc-js runs only in Node (tests), not in the browser bundle.
+
 ## Session 3a (2026-11-20): the six pages, by-host noindex, PR CI warnings. Branch `feat/pages`
 
 Done:

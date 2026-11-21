@@ -1,6 +1,7 @@
 <!--
 	design/jct-download-01/legal/privacy.md, word for word, without its H1 and "Last updated" line
 	(the page shows those from config). The contact email and phone number come from config (labels.contact.email, site.phone); the phone is in Geist Mono (checklist: fixed-width digits).
+	Session 3b part 2: the "When you visit" paragraph is the manager's Google Analytics text (Jon approves it in PR #5).
 -->
 <script>
 	import { labels } from '$lib/config/labels';
@@ -19,7 +20,7 @@ consultjct.com is run by JCT Consulting, Jon Thornham's product and operations p
 
 **When you pay:** advisory hours and the Sprint deposit are paid through Stripe. Stripe handles your card details under [its own privacy policy](https://stripe.com/privacy); we never see your full card number.
 
-**When you visit:** a lightweight analytics tool counts page views and form submissions so we know which pages are useful. It isn't used for advertising. Your light or dark theme choice is saved in your own browser.
+**When you visit:** we use Google Analytics to count page views and form submissions so we know which pages are useful. It sets cookies in your browser, except for visitors in the EU, UK and Switzerland, and Google handles that data under [its own privacy policy](https://policies.google.com/privacy). It isn't used for advertising. Your light or dark theme choice is saved in your own browser.
 
 ## How we use it
 

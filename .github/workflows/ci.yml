@@ -23,7 +23,16 @@ jobs:
           cache: npm
 
       - name: Install
-        run: npm ci
+        run: npm ci && npm ci --prefix functions
+
+      # The Firebase emulators (rules and function tests) need Java and the Firebase CLI.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Firebase CLI
+        run: npm install --global firebase-tools@15.32.1
 
       - name: Lint and formatting
         run: npm run lint
@@ -40,6 +49,19 @@ jobs:
       - name: Unit tests
         run: npm run test:unit
 
+      # The email function's logic, with a fake Mailjet (no network).
+      - name: Function tests
+        run: npm run test:functions
+
+      # firestore.rules on the Firestore emulator (project demo-jct).
+      - name: Firestore rules tests
+        run: npm run test:rules
+
+      # The form's save through the rules, then the function on the emulators (email logged,
+      # never sent).
+      - name: Emulator flow tests
+        run: npm run test:emulators
+
       # Builds the site, then: SEO registry, built head tags, every old URL (200 or one
       # permanent redirect), and the internal link check.
       - name: SEO and redirects
@@ -48,7 +70,8 @@ jobs:
       - name: Internal link check
         run: npm run check:links
 
-      # Serves that build with `vite preview` and audits all 8 pages. SEO must be 100.
+      # Serves that build with `vite preview` and audits all 8 pages, 3 loads each (median):
+      # SEO and Accessibility 100, Performance at least 90.
       - name: Lighthouse
         run: npx --yes @lhci/cli@0.15.1 autorun
 

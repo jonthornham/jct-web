@@ -27,14 +27,22 @@ The old site is SvelteKit on **Vercel**, canonical host **www.consultjct.com**. 
 | `npm run test:unit` | Unit tests (`tests/unit`) |
 | `npm run test:seo` | Builds, then the SEO registry, built head tags, every old URL in `docs/SEO_INVENTORY.csv` (200 or one permanent redirect), and the link check |
 | `npm run check:links` | Internal link check on the last build |
-| `npm run lighthouse` | Lighthouse on all 8 pages of the last build: SEO 100, Accessibility 100, Performance ≥ 90 |
-| `npm run images` / `screenshots` | Image pipeline / design-vs-build screenshots (`--set shell\|pages`, `--tag before\|after`) |
+| `npm run lighthouse` | Lighthouse on all 8 pages of the last build, 3 loads each (median): SEO 100, Accessibility 100, Performance ≥ 90 |
+| `npm run emulators` | Firestore + Functions emulators, project `demo-jct` (JCT ports) |
+| `npm run test:rules` | `firestore.rules` tests on the Firestore emulator |
+| `npm run test:functions` | The email function's logic, fake Mailjet (`functions/test`) |
+| `npm run test:emulators` | Form save through the rules, then the function on the emulators (email logged, never sent) |
+| `npm run images` / `screenshots` | Image pipeline / design-vs-build screenshots (`--set shell\|pages\|form`, `--tag before\|after`) |
 
-CI (`.github/workflows/ci.yml`) runs lint, check:code, the placeholder check (a warning on PRs, a failure on `main`), unit, test:seo, the link check and Lighthouse on every PR.
+CI (`.github/workflows/ci.yml`) runs lint, check:code, the placeholder check (a warning on PRs, a failure on `main`), unit, function, rules and emulator tests, test:seo, the link check and Lighthouse on every PR.
 
 SEO lives in `src/lib/seo/` (`registry.js` for head tags, sitemap and robots.txt; `redirects.js` for old URLs). `scripts/vercel-output.js` writes the redirects and `X-Robots-Tag: noindex` for every host except `www.consultjct.com` into Vercel's routing at build time.
 
 Page copy lives in `src/lib/content/` (one file per page), UI labels in `src/lib/config/labels.js`, links and facts in `src/lib/config/site.js`. A link Jon hasn't sent is a `[PLACEHOLDER: …]` string in `site.js` (rendered by `MissingLink.svelte`; never `href="#"`).
+
+**Free Consult intake (3b):** `src/components/booking/` (Booking switches Calendly ↔ IntakeForm), rules in `src/lib/intake.js` (same limits as `firestore.rules`), Firebase in `src/lib/firebase/consults.js` (dynamic import, `/free-consult` only). `vite dev` always uses the emulators (`demo-jct`), never a real project. The email is `functions/` (2nd gen, Node.js 24, Mailjet keys as Firebase secrets only).
+
+**Google Analytics (3b part 2):** `src/lib/analytics.js`, GA4 via gtag.js. It loads only on `www.consultjct.com` with `VITE_GA_MEASUREMENT_ID` set (Vercel, Production only), so never locally, on previews or in CI. Consent Mode v2: no cookies for the EEA, UK and Switzerland. Launch steps: `docs/LAUNCH.md`.
 
 ## Safety rules (always)
 - Branches and PRs only. Never commit to `main` directly.
@@ -48,11 +56,12 @@ Page copy lives in `src/lib/content/` (one file per page), UI labels in `src/lib
 
 ## Emulator ports (JCT block = 3xxxx)
 Picked on 2026-11-20. Nothing was listening on 30000–39999. Lamp uses the 2xxxx block (28180/29399/29299/25101/24410/24510/24010). Another local project is using 1xxxx (14400, 14500, 15001, 18080, 19099, 19150, 19199).
+**Nov 20 (3b):** Wingbeat's emulators were found running on 34400, 34500, 35001, 38080, 39099, 39150 and 39199, inside this block. None clash with JCT's ports except 39150, so JCT's Firestore websocket moved to 39160.
 
 | Service | Port |
 |---|---|
 | Firestore | 38180 |
-| Firestore websocket | 39150 |
+| Firestore websocket | 39160 (was 39150: Wingbeat's Firestore emulator took 39150 on Nov 20) |
 | Auth | 39399 |
 | Storage | 39299 |
 | Functions | 35101 |
