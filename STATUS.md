@@ -7,6 +7,20 @@
 - **Analytics on the old site: none.** Search Console is the only traffic data.
 - Old site: **Email/Password sign-in is OFF** in `jctconsulting-a2ed3` (done by Jon in the console). Nobody can sign in or register on the old site. The new site has no login.
 
+## Session 3b part 2 (2026-11-20): Google Analytics, launch steps, form screenshots. Branch `feat/intake` (PR #5)
+
+Done:
+- **Google Analytics 4** (Jon's choice), gtag.js, not Tag Manager: `src/lib/analytics.js`, started from the root layout.
+  - Loads only on **www.consultjct.com** and only when `VITE_GA_MEASUREMENT_ID` is set (`.env.example`, empty). Never on localhost, previews, `*.vercel.app` or the bare consultjct.com. gtag.js is added after the page has loaded, when the browser is idle.
+  - **Consent Mode v2**, no banner: granted by default; `analytics_storage` and `ad_storage` denied for the EEA (30 countries), the UK and Switzerland. `ad_user_data` and `ad_personalization` are denied everywhere (nothing is for advertising). Google signals and ad personalisation signals off.
+  - `consult_submitted` is counted after a real save (never for a bot's quiet "sent").
+  - Tests: 10 unit tests (`tests/unit/analytics.test.js`). Browser proof on a build with a test ID: Google requests only on www (blocked, so nothing reached Google); none on consultjct.com, two vercel.app hosts or localhost.
+- **Privacy:** "When you visit" is the manager's Google Analytics paragraph, for Jon's approval in the PR.
+- **`docs/LAUNCH.md`:** Jon's launch steps in order.
+- **Screenshots:** every form state beside the design, 390/1440, light/dark: `docs/screenshots/form/` (the `intake` set renamed `form`).
+
+Known difference from the design: at 1440 the design puts the submit button and the contact line on one row; the build stacks them (also in part 1).
+
 ## Session 3b part 1 (2026-11-20): intake form, email function, App Check. Branch `feat/intake`
 
 Done:
@@ -18,7 +32,7 @@ Done:
 - **Firebase loads only on /free-consult,** and only when the form is on screen.
 - **Lighthouse:** 3 loads per page, median; same thresholds.
 - **Fonts self-hosted:** Geist and Geist Mono now come from `static/fonts` (SIL OFL), preloaded, instead of Google Fonts. On GitHub's machine the late Google font reflowed long pages (layout shift 0.137 on Privacy, Performance 88); now 0.000 on every page.
-- **Screenshots:** the five states beside the design, 390/1440, light/dark: `docs/screenshots/intake/`.
+- **Screenshots:** the five states beside the design, 390/1440, light/dark: `docs/screenshots/form/` (moved from `intake/` in part 2).
 - **Ports:** JCT's Firestore websocket moved 39150 → 39160 (Wingbeat's emulator holds 39150).
 
 Placeholders left (8 lines, the same 8 as 3a). The bad-link message is Jon's: "Enter a link like https://example.com." (part 2 preface).
@@ -30,25 +44,8 @@ Decided by Jon (part 2 preface):
 - **Fonts:** keep them self-hosted. **The site no longer loads anything from Google Fonts** (no `fonts.googleapis.com` or `fonts.gstatic.com` request on any page).
 - **Port 39160** for JCT's Firestore websocket is fine.
 
-### For docs/LAUNCH.md (part 2): App Check, exact console steps
-1. Google Cloud console, project **jct-web-d8780** → Security → **reCAPTCHA** → enable the reCAPTCHA Enterprise API if asked → **Create key**: type *Website*, domains `www.consultjct.com` and `consultjct.com` (add the Vercel preview domain only if previews should pass App Check) → no "checkbox challenge" → Create. Copy the **key ID**.
-2. Firebase console → **App Check** → **Apps** → the web app → **reCAPTCHA Enterprise** → paste the key ID → keep the token time to live at 1 hour → **Save**.
-3. Vercel → jct-web → Settings → Environment Variables → `VITE_APPCHECK_SITE_KEY` = the key ID (Production; Preview too if step 1 added the preview domain) → redeploy.
-4. Leave enforcement **off**. Firebase console → App Check → **APIs** → **Cloud Firestore** shows the share of verified requests.
-5. After launch, once real traffic shows as verified (close to 100% for about a week): App Check → APIs → Cloud Firestore → **Enforce** → Confirm. Unverified requests are then refused.
-
-### Other launch steps (order, for LAUNCH.md)
-0. **First:** Firebase console → jct-web-d8780 → **Firestore Database** must exist. If it doesn't: **Create database** → **Production mode** → location **nam5 (United States)**. The function region must match: `us-central1` goes with `nam5` (what the code uses now). If another location is picked, change one line in `functions/index.js`: `export const REGION = 'us-central1';` → the region for that location (e.g. `us-east1` for a `us-east1` database), then redeploy the function.
-1. (Jon will tell the manager what Firestore shows; until then the code keeps `us-central1`.)
-2. Firebase web config: the six `VITE_FIREBASE_*` values on Vercel (done, per Jon).
-3. Rules: `firebase deploy --only firestore:rules --project jct-web-d8780`.
-4. Mailjet: verify the sender jon@consultjct.com (or the domain, with SPF and DKIM).
-5. Secrets: `firebase functions:secrets:set MAILJET_API_KEY --project jct-web-d8780`, then `MAILJET_SECRET_KEY` (pasted at the prompt; never in a file).
-6. Function: `firebase deploy --only functions --project jct-web-d8780` (from the repo root; turns on the Cloud Functions, Build, Artifact Registry, Eventarc and Secret Manager APIs).
-7. App Check, steps 1–4 above.
-8. End-to-end test on a **Vercel preview link** (behind Vercel's login; previews have the Firebase values): send one request; the email reaches jon@consultjct.com and the document in `consults` gets `emailedAt`.
-   Then again on **https://www.consultjct.com** after cutover.
-9. After launch: App Check step 5.
+### Launch steps
+Moved to **`docs/LAUNCH.md`** (part 2): Firestore database (nam5 / `us-central1`), Mailjet domain and key, secrets, App Check, rules and function deploys with dry runs first, Google Analytics, the preview test, the www test after cutover, App Check enforcement.
 
 ### Package warnings (npm audit, Nov 20): left for a maintenance session (Jon)
 29 in the site packages: 1 critical, 19 high, 8 moderate, 1 low. `functions/`: 0. Most come from build and test tools that never reach the browser. "Direct" = listed in package.json; otherwise it comes in through another package.

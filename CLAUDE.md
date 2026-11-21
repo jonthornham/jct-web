@@ -32,7 +32,7 @@ The old site is SvelteKit on **Vercel**, canonical host **www.consultjct.com**. 
 | `npm run test:rules` | `firestore.rules` tests on the Firestore emulator |
 | `npm run test:functions` | The email function's logic, fake Mailjet (`functions/test`) |
 | `npm run test:emulators` | Form save through the rules, then the function on the emulators (email logged, never sent) |
-| `npm run images` / `screenshots` | Image pipeline / design-vs-build screenshots (`--set shell\|pages`, `--tag before\|after`) |
+| `npm run images` / `screenshots` | Image pipeline / design-vs-build screenshots (`--set shell\|pages\|form`, `--tag before\|after`) |
 
 CI (`.github/workflows/ci.yml`) runs lint, check:code, the placeholder check (a warning on PRs, a failure on `main`), unit, function, rules and emulator tests, test:seo, the link check and Lighthouse on every PR.
 
@@ -41,6 +41,8 @@ SEO lives in `src/lib/seo/` (`registry.js` for head tags, sitemap and robots.txt
 Page copy lives in `src/lib/content/` (one file per page), UI labels in `src/lib/config/labels.js`, links and facts in `src/lib/config/site.js`. A link Jon hasn't sent is a `[PLACEHOLDER: …]` string in `site.js` (rendered by `MissingLink.svelte`; never `href="#"`).
 
 **Free Consult intake (3b):** `src/components/booking/` (Booking switches Calendly ↔ IntakeForm), rules in `src/lib/intake.js` (same limits as `firestore.rules`), Firebase in `src/lib/firebase/consults.js` (dynamic import, `/free-consult` only). `vite dev` always uses the emulators (`demo-jct`), never a real project. The email is `functions/` (2nd gen, Node.js 24, Mailjet keys as Firebase secrets only).
+
+**Google Analytics (3b part 2):** `src/lib/analytics.js`, GA4 via gtag.js. It loads only on `www.consultjct.com` with `VITE_GA_MEASUREMENT_ID` set (Vercel, Production only), so never locally, on previews or in CI. Consent Mode v2: no cookies for the EEA, UK and Switzerland. Launch steps: `docs/LAUNCH.md`.
 
 ## Safety rules (always)
 - Branches and PRs only. Never commit to `main` directly.

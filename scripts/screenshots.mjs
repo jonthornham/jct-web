@@ -2,7 +2,7 @@
 // to JCT's reference PNGs).
 //
 //   npm run dev:preview                 (in another terminal; serves http://localhost:35173)
-//   npm run screenshots -- [--base http://localhost:35173] [--set shell|pages|intake]
+//   npm run screenshots -- [--base http://localhost:35173] [--set shell|pages|form]
 //                          [--only header,home]
 //                          [--tag before|after]
 //
@@ -101,7 +101,7 @@ const SETS = {
 	// Session 3b: the intake form's five states on /free-consult, each beside its design screen.
 	// Calendly is blocked so the form shows (after the 8s wait). Needs the dev server
 	// (`npm run dev:preview`, which always uses the emulators) and `npm run emulators`.
-	intake: ['form', 'form-errors', 'sending', 'send-error', 'success'].map((state) => ({
+	form: ['form', 'form-errors', 'sending', 'send-error', 'success'].map((state) => ({
 		view: state,
 		ref: screen(`free-consult-${state}`),
 		crop: 'full',

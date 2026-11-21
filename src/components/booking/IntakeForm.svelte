@@ -28,6 +28,7 @@
 		summary,
 		validate
 	} from '$lib/intake';
+	import { track } from '$lib/analytics';
 	import Alert from '$components/ui/Alert.svelte';
 	import ArrowLink from '$components/ui/ArrowLink.svelte';
 	import Button from '$components/ui/Button.svelte';
@@ -97,8 +98,11 @@
 		const result = await submitConsult($state.snapshot(values), {
 			honeypot,
 			startedAt,
-			save: async (doc) =>
-				(await (firebase ?? import('$lib/firebase/consults.js'))).saveConsult(doc)
+			save: async (doc) => {
+				await (await (firebase ?? import('$lib/firebase/consults.js'))).saveConsult(doc);
+				// Counted only after a real save (a bot's quiet "sent" never gets here). Only on www.
+				track('consult_submitted');
+			}
 		});
 		status = result === 'sent' ? 'sent' : 'error';
 		await tick();
